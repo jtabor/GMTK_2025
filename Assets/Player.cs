@@ -66,7 +66,14 @@ public class Player : MonoBehaviour
                     ship.ReplaceHardpoint(newTurret,0);
 
                 }
-                
+                if (Keyboard.current.spaceKey.isPressed)
+                {
+                    PlayerShip ps = controlledObject.GetComponent<PlayerShip>();
+                    if (ps != null)
+                    {
+                        ps.Fire(selectedTargets.ToArray()); 
+                    }
+                }
                 if (Mouse.current.leftButton.wasPressedThisFrame){
                     Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
                     RaycastHit hit;

@@ -83,4 +83,13 @@ public class PlayerShip : MonoBehaviour
         }
     }
 
+    public void Fire(GameObject[] targets)
+    {
+        foreach (GameObject weapon in weapons)
+        {
+            Turret script = weapon.GetComponent<Turret>();
+            script.Fire(targets);
+        }
+    }
+
 }

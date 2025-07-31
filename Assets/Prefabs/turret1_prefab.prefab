@@ -40,6 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6773987232440231726}
+  - component: {fileID: 3728907814144095732}
   m_Layer: 0
   m_Name: turret1_prefab
   m_TagString: Untagged
@@ -64,6 +65,22 @@ Transform:
   - {fileID: 7016598757776441646}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3728907814144095732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8309085013552773564}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dea8c872d8221e149a88b60a228598a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bulletSpawns: []
+  projectile: {fileID: 3751827086965908117, guid: cf2ef9ebd83cd2018bb75c83b4a49865, type: 3}
+  cooldownTimeMs: 500
+  muzzleVelocity: 10
 --- !u!1001 &4940296665967868357
 PrefabInstance:
   m_ObjectHideFlags: 0

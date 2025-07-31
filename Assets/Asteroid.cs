@@ -27,11 +27,24 @@ public class Asteroid : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         GameObject otherObject = collision.gameObject;
+        Laser laser = otherObject.GetComponent<Laser>();
         Rigidbody rb = otherObject.GetComponent<Rigidbody>();
-        Vector3 relVel = collision.relativeVelocity;
-        float damage = rb.mass*relVel.magnitude; 
-        Debug.Log("Asteroid hit - Damage: " + damage);
-        DoDamage(damage,DamageSource.Collision);
+
+        float damage = 0;
+
+        if (laser != null)
+        {
+            damage = laser.damage;
+            DoDamage(damage,DamageSource.Laser);
+        }
+        else if (rb != null)
+        {
+            Vector3 relVel = collision.relativeVelocity;
+            damage = rb.mass*relVel.magnitude; 
+            Debug.Log("Asteroid hit - Damage: " + damage);
+            DoDamage(damage,DamageSource.Collision);
+        }
+        
     }
     private void DoDamage(float damage, DamageSource source)
     {

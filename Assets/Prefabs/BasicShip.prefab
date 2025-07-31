@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 703764735121192159}
   m_Layer: 0
   m_Name: BasicShip
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -87,6 +87,7 @@ MonoBehaviour:
   maxTorque: 100
   hardpoints:
   - {fileID: 3609011953883247020}
+  weapons: []
 --- !u!54 &96777456479292678
 Rigidbody:
   m_ObjectHideFlags: 0
