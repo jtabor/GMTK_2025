@@ -6,10 +6,16 @@ public class Player : MonoBehaviour
 
     public GameObject controlledObject;
     private float zoomDegrees = 90;
+
+
+
+    //DEBUG
+    public GameObject[] turrets;
+    private int curTurret= 0;
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+
     }
 
     // Update is called once per frame
@@ -31,33 +37,43 @@ public class Player : MonoBehaviour
                 // Handle AD rotation
                 float rotation = 0f;
                 if (Keyboard.current.aKey.isPressed)
-                    rotation += 1f; 
+                    rotation += -1f; 
                 if (Keyboard.current.dKey.isPressed)
-                    rotation += -1f;
+                    rotation += 1f;
 
                 ship.HandleControlInput(movement,rotation);
 
                 // Handle QE turret rotation
                 float turretRotation = 0f;
+               
                 if (Keyboard.current.qKey.isPressed)
                     turretRotation = -1f;
+                
                 if (Keyboard.current.eKey.isPressed)
                     turretRotation = 1f;
-                // if (Keyboard.current.spaceKey.isPressed)
-                // {
-                //     ship.shoot();
-                // }
-                // ship.HandleTurretRotation(turretRotation);
-                Vector2 scrollDelta = Mouse.current.scroll.ReadValue();
-                float scrollY = scrollDelta.y;
-                bool rtMouse = Mouse.current.rightButton.isPressed;
-                ship.HandleCameraInput(rtMouse,scrollY);
+                
+                if (Keyboard.current.fKey.wasPressedThisFrame)
+                {
+                    curTurret = (curTurret + 1) % turrets.Length;
+                    GameObject newTurret = Instantiate(turrets[curTurret]);
+                    ship.ReplaceHardpoint(newTurret,0);
 
+                }
+                    // if (Keyboard.current.spaceKey.isPressed)
+                    // {
+                    //     ship.shoot();
+                    // }
+                    // ship.HandleTurretRotation(turretRotation);
+                    Vector2 scrollDelta = Mouse.current.scroll.ReadValue();
+                    float scrollY = scrollDelta.y;
+                    bool rtMouse = Mouse.current.rightButton.isPressed;
+                    ship.HandleCameraInput(rtMouse,scrollY);
+
+                }
             }
+            
         }
-        
+
+
+
     }
-
-
-
-}
