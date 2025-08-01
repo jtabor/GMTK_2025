@@ -20,7 +20,18 @@ public class PlayerShip : MonoBehaviour
     public const float ZOOM_MIN = 20.0f;
     public const float ZOOM_MAX = 90.0f;
     private float currentZoom = 60; 
-    
+   
+    public float tractorRange = 10f;
+    public float tractorMaxForce = 1000f;
+    public float tractorBreakDistance = 15f;
+    public float tractorSpringConstant = 500f;
+    public float tractorDamping = 50f;
+    public GameObject tractorIndicator;
+    private Renderer tractorIndicatorRenderer;
+    public GameObject tractorTarget;
+    public GameObject tractorFocus;
+    private bool isTractorEnabled = false;
+    private bool isTractorConnected = false;
     private Rigidbody rb;
 
     CinemachineCamera defaultCamera; 
@@ -38,23 +49,62 @@ public class PlayerShip : MonoBehaviour
         //Maybe set the CG here?  You can do it manually
         //
         weapons = new GameObject[hardpoints.Length];
-
+        tractorIndicatorRenderer = tractorIndicator.GetComponent<Renderer>();
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
- 
+         
     }
 
     // Update is called once per frame
     void Update()
     {
-        //TODO - probably want to make this a rigidbody instead.
-        // currentVelocity = currentVelocity + transform.TransformDirection(currentForce*Time.deltaTime); 
-        // transform.position = transform.position + currentVelocity*Time.deltaTime;
-        // transform.Rotate(0, currentRotVel * Time.deltaTime, 0, Space.Self);
         rb.AddForce(currentForce);
         rb.AddTorque(new Vector3(0,currentRotVel,0));
+        if (tractorTarget == null)
+        {
+            isTractorConnected = false;
+        }
+        tractorIndicatorRenderer.enabled = isTractorEnabled;
+
+        if (isTractorEnabled)
+        {
+            if (isTractorConnected)
+            {
+                Vector3 tractorDirection = tractorTarget.transform.position - tractorFocus.transform.position;
+                float distance = tractorDirection.magnitude;
+
+                if (distance > tractorBreakDistance)
+                {
+                    isTractorConnected = false;
+                }
+                else
+                {
+                    Rigidbody targetRb = tractorTarget.GetComponent<Rigidbody>();
+                    Vector3 tractorForce = tractorDirection.normalized * tractorSpringConstant * distance*distance;
+                    Vector3 relativeVelocity = rb.linearVelocity - targetRb.linearVelocity;
+                    Vector3 dampingForce = -relativeVelocity * tractorDamping;
+                    Vector3 totalTractorForce = Vector3.ClampMagnitude(tractorForce + dampingForce, tractorMaxForce);
+
+                    // rb.AddForce(totalTractorForce);
+
+                    if (targetRb != null)
+                    {
+                        targetRb.AddForce(-totalTractorForce);
+                    }
+                }
+            }
+            else 
+            {
+                float distance = Vector3.Distance(tractorFocus.transform.position, tractorTarget.transform.position);
+                if (distance <= tractorRange)
+                {
+                    isTractorConnected = true;
+                }
+            }
+        }
+
     }
     public void ReplaceHardpoint(GameObject weapon, int index)
     {
@@ -91,5 +141,8 @@ public class PlayerShip : MonoBehaviour
             script.Fire(targets);
         }
     }
-
+    public void ToggleTractorState()
+    {
+        isTractorEnabled = !isTractorEnabled;
+    }
 }

@@ -1,24 +1,38 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using TMPro;
 
 public class Player : MonoBehaviour
 {
 
     public GameObject controlledObject;
     private float zoomDegrees = 90;
-
+    public TextMeshProUGUI modeText;
+ 
     public Canvas mainUi;
     public List<GameObject> selectedTargets = new List<GameObject>();
-    public GameObject[] selectedGoals;
+    public List<GameObject> selectedGoals = new List<GameObject>();
+    public GameObject selectedTractor;
 
     public Sprite targetSprite;
-    public Sprite goalSprite;
+    public Sprite tractorSprite;
 
     //DEBUG
     public GameObject[] turrets;
 
     private int curTurret= 0;
+
+    public enum SelectionMode{
+        TARGET,
+        TRACTOR,
+        GOAL
+    }
+    private string[] modeStrings = {"TRGT", "TRCTR","GL"};
+    public SelectionMode curMode = SelectionMode.TARGET;
+    
+
+
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -74,39 +88,66 @@ public class Player : MonoBehaviour
                         ps.Fire(selectedTargets.ToArray()); 
                     }
                 }
+                
+                if (Keyboard.current.tKey.wasPressedThisFrame)
+                {
+                    ship.ToggleTractorState();      
+                }
+
+
+                if (Keyboard.current.escapeKey.isPressed)
+                {
+                    if (curMode == SelectionMode.TARGET)
+                    {
+                        selectedTargets.Clear();
+                    }
+                    else if (curMode == SelectionMode.TRACTOR)
+                    {
+                        selectedTractor = null;
+                    }
+                }
+
                 if (Mouse.current.leftButton.wasPressedThisFrame){
                     Ray ray = Camera.main.ScreenPointToRay(Mouse.current.position.ReadValue());
                     RaycastHit hit;
                     
                     if (Physics.Raycast(ray, out hit))
                     {
-                        Debug.Log("MOUSE HIT!");
                         GameObject hitObject = hit.transform.gameObject;
                         Clickable clickable = hitObject.GetComponent<Clickable>();
                         if (clickable != null)
                         {
                             bool ctrlPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
                             
-                            if (ctrlPressed)
+                            if (curMode == SelectionMode.TARGET)
                             {
-                                // Append to selectedTargets if not already present
-                                if (!selectedTargets.Contains(hitObject))
+                                if (ctrlPressed)
                                 {
+                                    // Append to selectedTargets if not already present
+                                    if (!selectedTargets.Contains(hitObject))
+                                    {
+                                        selectedTargets.Add(hitObject);
+                                    }
+                                }
+                                else
+                                {
+                                    // Replace selectedTargets with just this one
+                                    selectedTargets.Clear();
                                     selectedTargets.Add(hitObject);
                                 }
                             }
-                            else
+                            else if (curMode == SelectionMode.TRACTOR)
                             {
-                                // Replace selectedTargets with just this one
-                                selectedTargets.Clear();
-                                selectedTargets.Add(hitObject);
+                                selectedTractor = hitObject;
                             }
+                            
                         }
                     }
-
-                    Debug.Log("Selected: " + selectedTargets.Count);
                 }
-
+                if (selectedTractor != null)
+                {
+                    ship.tractorTarget = selectedTractor;
+                }
                 Vector2 scrollDelta = Mouse.current.scroll.ReadValue();
                 float scrollY = scrollDelta.y;
                 bool rtMouse = Mouse.current.rightButton.isPressed;
@@ -115,16 +156,41 @@ public class Player : MonoBehaviour
             }
         }
         
+
+        if (Keyboard.current.tabKey.wasPressedThisFrame)
+        {
+            int modeCount = System.Enum.GetValues(typeof(SelectionMode)).Length;
+            curMode = (SelectionMode)(((int)curMode + 1) % modeCount);
+        }
+        modeText.text = "MODE: " + modeStrings[(int)curMode]; 
+
+        if (selectedTractor != null) 
+        {
+            DrawGameObject(tractorSprite, selectedTractor, "TRCTR TRGT");
+        }
         // Draw target UI for selected targets
         DrawSelectedTargets();
     }
-    
-    void DrawSelectedTargets()
+    void DrawGameObject(Sprite cornerSprite, GameObject go, string text)
     {
         if (mainUi == null) return;
-        
+       
         MainUI mainUIScript = mainUi.GetComponent<MainUI>();
         if (mainUIScript == null) return;
+       
+        Collider collider = go.GetComponent<Collider>();
+        if (collider == null) return;
+        
+        // Get world space bounds
+        Bounds bounds = collider.bounds;
+        
+                    // Draw the target UI
+        mainUIScript.DrawTarget(cornerSprite, bounds, text);
+    
+
+    }
+    void DrawSelectedTargets()
+    {
         
         Camera cam = Camera.main;
         if (cam == null) return;
@@ -132,15 +198,7 @@ public class Player : MonoBehaviour
         foreach (GameObject target in selectedTargets)
         {
             if (target == null) continue;
-            
-            Collider collider = target.GetComponent<Collider>();
-            if (collider == null) continue;
-            
-            // Get world space bounds
-            Bounds bounds = collider.bounds;
-            
-                        // Draw the target UI
-            mainUIScript.DrawTarget(targetSprite, bounds, target.name);
+            DrawGameObject(targetSprite, target, target.name); 
         }
     }
 
