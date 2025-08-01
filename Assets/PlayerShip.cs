@@ -5,6 +5,7 @@ using Unity.Cinemachine;
 public class PlayerShip : MonoBehaviour
 {
     public Vector3 maxForce = new Vector3(0f,0f,0f);
+    public float boostForce = 200f;
     public float rotationalVelMax = 1.0f;
     public float mass = 1000f;
     public float maxTorque = 100f;
@@ -68,7 +69,7 @@ public class PlayerShip : MonoBehaviour
 
         GameObject blinkIndicator = blinkFocus.transform.Find("BlinkIndicator").gameObject;
         blinkIndicatorRenderer = blinkIndicator.GetComponent<Renderer>();
-
+        blinkIndicatorRenderer.enabled = false;
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -190,9 +191,13 @@ public class PlayerShip : MonoBehaviour
         weapon.transform.SetParent(hardpoints[index].transform, false);
 
     }
-    public void HandleControlInput(Vector3 control_input, float rotation)
+    public void HandleControlInput(Vector3 control_input, float rotation, bool boostActive)
     {
         currentForce = transform.TransformDirection(Vector3.Scale(maxForce,control_input));
+        if (boostActive)
+        {
+            currentForce = currentForce + transform.TransformDirection(new Vector3(boostForce,0f,0f));
+        }
         currentRotVel = rotation*maxTorque; 
     }
 
@@ -200,13 +205,11 @@ public class PlayerShip : MonoBehaviour
     {
         // camInputController = defaultCamera.GetComponent<CinemachineInputAxisController>();
         camInputController.enabled = slaveToMouse;
-        if (slaveToMouse){
-            currentZoom += scrollDelta*ZOOM_SPEED;
-            currentZoom = Mathf.Clamp(currentZoom,ZOOM_MIN,ZOOM_MAX);
-            LensSettings currentLens = this.defaultCamera.Lens;
-            currentLens.FieldOfView = currentZoom;
-            this.defaultCamera.Lens = currentLens;
-        }
+        currentZoom += scrollDelta*ZOOM_SPEED;
+        currentZoom = Mathf.Clamp(currentZoom,ZOOM_MIN,ZOOM_MAX);
+        LensSettings currentLens = this.defaultCamera.Lens;
+        currentLens.FieldOfView = currentZoom;
+        this.defaultCamera.Lens = currentLens;
     }
 
     public void Blink(bool keyDown)

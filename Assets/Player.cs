@@ -31,7 +31,12 @@ public class Player : MonoBehaviour
     private string[] modeStrings = {"TRGT", "TRCTR","GL"};
     public SelectionMode curMode = SelectionMode.TARGET;
     
-
+    public enum PauseState{
+        NONE,
+        PLAYER_PAUSED,
+        GAME_PAUSED
+    }
+    public PauseState curPauseState = PauseState.NONE;
 
 	// Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -42,7 +47,27 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (controlledObject != null)
+        selectedTargets.RemoveAll(target => target == null);
+        selectedGoals.RemoveAll(goal => goal == null);
+
+        if (Keyboard.current.escapeKey.wasPressedThisFrame)
+        {
+            if (curPauseState == PauseState.NONE)
+            {
+                curPauseState = PauseState.PLAYER_PAUSED;
+            }
+            else if (curPauseState == PauseState.PLAYER_PAUSED)
+            {
+                curPauseState = PauseState.NONE;
+            }
+        }
+
+        if (curPauseState == PauseState.NONE)
+            Time.timeScale = 1f;
+        else
+            Time.timeScale = 0f;
+
+        if (controlledObject != null && curPauseState == PauseState.NONE)
         {
             PlayerShip ship = controlledObject.GetComponent<PlayerShip>();
             if (ship != null)
@@ -62,21 +87,20 @@ public class Player : MonoBehaviour
                 if (Keyboard.current.dKey.isPressed)
                     rotation += 1f;
 
-                ship.HandleControlInput(movement,rotation);
-
-                // Handle QE turret rotation
-                float turretRotation = 0f;
-               
                 if (Keyboard.current.qKey.isPressed)
-                    turretRotation = -1f;
-                
+                    movement += new Vector3(0f,0f,1f); 
                 if (Keyboard.current.eKey.isPressed)
-                    turretRotation = 1f;
+                    movement += new Vector3(0f,0f,-1f); 
                 
+                ship.HandleControlInput(movement,rotation, Keyboard.current.shiftKey.isPressed);
+                
+                //DEBUG 
                 if (Keyboard.current.fKey.wasPressedThisFrame)
                 {
                     curTurret = (curTurret + 1) % turrets.Length;
                     GameObject newTurret = Instantiate(turrets[curTurret]);
+                    Turret t = newTurret.GetComponent<Turret>();
+                    t.hasGimbal = true;
                     ship.ReplaceHardpoint(newTurret,0);
 
                 }
@@ -170,22 +194,22 @@ public class Player : MonoBehaviour
                 ship.HandleCameraInput(rtMouse,scrollY);
 
             }
-        }
         
-
-        if (Keyboard.current.tabKey.wasPressedThisFrame)
-        {
-            int modeCount = System.Enum.GetValues(typeof(SelectionMode)).Length;
-            curMode = (SelectionMode)(((int)curMode + 1) % modeCount);
-        }
-        modeText.text = "MODE: " + modeStrings[(int)curMode]; 
-
+            if (Keyboard.current.tabKey.wasPressedThisFrame)
+            {
+                int modeCount = System.Enum.GetValues(typeof(SelectionMode)).Length;
+                curMode = (SelectionMode)(((int)curMode + 1) % modeCount);
+            }
+            modeText.text = "MODE: " + modeStrings[(int)curMode]; 
+}
+        
         if (selectedTractor != null) 
         {
             DrawGameObject(tractorSprite, selectedTractor, "TRCTR TRGT");
         }
         // Draw target UI for selected targets
         DrawSelectedTargets();
+
     }
     void DrawGameObject(Sprite cornerSprite, GameObject go, string text)
     {
