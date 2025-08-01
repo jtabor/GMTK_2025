@@ -64,7 +64,7 @@ public class Asteroid : MonoBehaviour
     private void DoDamage(float damage, DamageSource source, Vector3 hitDir)
     {
         curHealth -= damage;
-        // Debug.Log("Asteroid new health: " + curHealth);
+        Debug.Log("Asteroid new health: " + curHealth + " damage: " + damage);
         if (curHealth <= 0) {
             Debug.Log("Asteroid Destroyed");
             DestroyObject(source, hitDir, damage);

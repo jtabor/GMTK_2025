@@ -33,6 +33,15 @@ public class PlayerShip : MonoBehaviour
     private bool isTractorEnabled = false;
     private bool isTractorConnected = false;
     private Rigidbody rb;
+    
+    public float blinkDistance = 5;
+    public int maxBlinkCharges = 3;
+    public float blinkRechargeTime = 2f;
+    public float blinkCooldownTime = 0.5f;
+    
+    private int currentBlinkCharges;
+    private float lastBlinkTime = -999f;
+    private float lastRechargeTime = 0f;
 
     CinemachineCamera defaultCamera; 
 
@@ -50,6 +59,7 @@ public class PlayerShip : MonoBehaviour
         //
         weapons = new GameObject[hardpoints.Length];
         tractorIndicatorRenderer = tractorIndicator.GetComponent<Renderer>();
+        currentBlinkCharges = maxBlinkCharges;
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -66,7 +76,16 @@ public class PlayerShip : MonoBehaviour
         {
             isTractorConnected = false;
         }
-        tractorIndicatorRenderer.enabled = isTractorEnabled;
+        tractorIndicatorRenderer.enabled = (isTractorConnected || isTractorEnabled);
+        
+        if (!isTractorEnabled)
+        {
+            if (isTractorConnected)
+            {
+                isTractorConnected = false;
+                //TODO: Disconnect Effect 
+            }
+        }
 
         if (isTractorEnabled)
         {
@@ -105,6 +124,12 @@ public class PlayerShip : MonoBehaviour
             }
         }
 
+        // Handle blink charge recharging
+        if (currentBlinkCharges < maxBlinkCharges && Time.time >= lastRechargeTime + blinkRechargeTime)
+        {
+            currentBlinkCharges++;
+            lastRechargeTime = Time.time;
+        }
     }
     public void ReplaceHardpoint(GameObject weapon, int index)
     {
@@ -133,6 +158,47 @@ public class PlayerShip : MonoBehaviour
         }
     }
 
+    public void Blink()
+    {
+        // Check if blink is available (has charges and not on cooldown)
+        if (currentBlinkCharges <= 0 || Time.time < lastBlinkTime + blinkCooldownTime)
+        {
+            return; // Cannot blink
+        }
+        
+        // Consume a charge and set cooldown
+        currentBlinkCharges--;
+        lastBlinkTime = Time.time;
+        
+        //TODO Effects
+        if (isTractorConnected && tractorTarget != null)
+        {
+            // Calculate direction from ship to tractor target
+            Vector3 shipToTarget = tractorTarget.transform.position - rb.transform.position;
+            float distanceToTarget = shipToTarget.magnitude;
+            Vector3 directionToTarget = shipToTarget.normalized;
+            
+            // Blink twice the distance in the direction of the target
+            Vector3 newPosition = rb.transform.position + directionToTarget * (distanceToTarget * 2f);
+            rb.transform.position = newPosition;
+            
+            // Mirror the y rotation along the line perpendicular to the ship-tractorTarget line
+            Vector3 perpendicular = Vector3.Cross(directionToTarget, Vector3.up);
+            if (perpendicular.magnitude > 0.001f) // Avoid division by zero
+            {
+                perpendicular = perpendicular.normalized;
+                Vector3 currentForward = rb.transform.forward;
+                Vector3 mirroredForward = Vector3.Reflect(currentForward, perpendicular);
+                rb.transform.rotation = Quaternion.LookRotation(mirroredForward, Vector3.up);
+            }
+        }
+        else
+        {
+            // Normal blink: move blinkDistance along the x-axis
+            Vector3 blinkOffset = rb.transform.TransformDirection(Vector3.right * blinkDistance);
+            rb.transform.position += blinkOffset;
+        }
+    }
     public void Fire(GameObject[] targets)
     {
         foreach (GameObject weapon in weapons)

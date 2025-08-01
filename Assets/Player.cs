@@ -80,12 +80,18 @@ public class Player : MonoBehaviour
                     ship.ReplaceHardpoint(newTurret,0);
 
                 }
+                if (Keyboard.current.gKey.wasPressedThisFrame)
+                {
+                    if (ship != null)
+                    {
+                        ship.Blink();
+                    }
+                }
                 if (Keyboard.current.spaceKey.isPressed)
                 {
-                    PlayerShip ps = controlledObject.GetComponent<PlayerShip>();
-                    if (ps != null)
+                    if (ship != null)
                     {
-                        ps.Fire(selectedTargets.ToArray()); 
+                        ship.Fire(selectedTargets.ToArray()); 
                     }
                 }
                 
@@ -121,6 +127,12 @@ public class Player : MonoBehaviour
                             
                             if (curMode == SelectionMode.TARGET)
                             {
+                                // Remove from selectedTractor if it's the same object
+                                if (selectedTractor == hitObject)
+                                {
+                                    selectedTractor = null;
+                                }
+                                
                                 if (ctrlPressed)
                                 {
                                     // Append to selectedTargets if not already present
@@ -138,6 +150,9 @@ public class Player : MonoBehaviour
                             }
                             else if (curMode == SelectionMode.TRACTOR)
                             {
+                                // Remove from selectedTargets if it's the same object
+                                selectedTargets.Remove(hitObject);
+                                
                                 selectedTractor = hitObject;
                             }
                             
