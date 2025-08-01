@@ -80,11 +80,12 @@ public class Player : MonoBehaviour
                     ship.ReplaceHardpoint(newTurret,0);
 
                 }
-                if (Keyboard.current.gKey.wasPressedThisFrame)
+                if (Keyboard.current.gKey.wasPressedThisFrame || Keyboard.current.gKey.wasReleasedThisFrame)
                 {
                     if (ship != null)
                     {
-                        ship.Blink();
+                        bool keyDown = Keyboard.current.gKey.isPressed;
+                        ship.Blink(keyDown);
                     }
                 }
                 if (Keyboard.current.spaceKey.isPressed)

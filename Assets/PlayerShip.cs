@@ -42,7 +42,10 @@ public class PlayerShip : MonoBehaviour
     private int currentBlinkCharges;
     private float lastBlinkTime = -999f;
     private float lastRechargeTime = 0f;
-
+    private bool isBlinkPreviewing = false;
+    private bool isBlinkKeyHeld = false;
+    public GameObject blinkFocus;
+    private Renderer blinkIndicatorRenderer;
     CinemachineCamera defaultCamera; 
 
     CinemachineInputAxisController camInputController;
@@ -60,6 +63,12 @@ public class PlayerShip : MonoBehaviour
         weapons = new GameObject[hardpoints.Length];
         tractorIndicatorRenderer = tractorIndicator.GetComponent<Renderer>();
         currentBlinkCharges = maxBlinkCharges;
+        
+        blinkFocus = Instantiate(blinkFocus, transform.position, transform.rotation);
+
+        GameObject blinkIndicator = blinkFocus.transform.Find("BlinkIndicator").gameObject;
+        blinkIndicatorRenderer = blinkIndicator.GetComponent<Renderer>();
+
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -130,7 +139,49 @@ public class PlayerShip : MonoBehaviour
             currentBlinkCharges++;
             lastRechargeTime = Time.time;
         }
+        
+        // Check if blink key is held but we couldn't preview due to no charges/cooldown
+        if (isBlinkKeyHeld && !isBlinkPreviewing)
+        {
+            // Check if blink is now available
+            if (currentBlinkCharges > 0 && Time.time >= lastBlinkTime + blinkCooldownTime)
+            {
+                // Start previewing now that blink is available
+                isBlinkPreviewing = true;
+                blinkIndicatorRenderer.enabled = true;
+                UpdateBlinkPreview();
+            }
+        }
+        
+        // Update blink preview position continuously while previewing
+        if (isBlinkPreviewing)
+        {
+            UpdateBlinkPreview();
+        }
     }
+    
+    private void UpdateBlinkPreview()
+    {
+        Vector3 targetPosition;
+        
+        if (isTractorConnected && tractorTarget != null)
+        {
+            // Calculate tractor blink position
+            Vector3 shipToTarget = tractorTarget.transform.position - rb.transform.position;
+            float distanceToTarget = shipToTarget.magnitude;
+            Vector3 directionToTarget = shipToTarget.normalized;
+            targetPosition = rb.transform.position + directionToTarget * (distanceToTarget * 2f);
+        }
+        else
+        {
+            // Normal blink position
+            Vector3 blinkOffset = rb.transform.TransformDirection(Vector3.right * blinkDistance);
+            targetPosition = rb.transform.position + blinkOffset;
+        }
+        
+        blinkFocus.transform.position = targetPosition;
+    }
+    
     public void ReplaceHardpoint(GameObject weapon, int index)
     {
         
@@ -158,45 +209,63 @@ public class PlayerShip : MonoBehaviour
         }
     }
 
-    public void Blink()
+    public void Blink(bool keyDown)
     {
-        // Check if blink is available (has charges and not on cooldown)
-        if (currentBlinkCharges <= 0 || Time.time < lastBlinkTime + blinkCooldownTime)
-        {
-            return; // Cannot blink
-        }
+        isBlinkKeyHeld = keyDown;
         
-        // Consume a charge and set cooldown
-        currentBlinkCharges--;
-        lastBlinkTime = Time.time;
-        
-        //TODO Effects
-        if (isTractorConnected && tractorTarget != null)
+        if (keyDown)
         {
-            // Calculate direction from ship to tractor target
-            Vector3 shipToTarget = tractorTarget.transform.position - rb.transform.position;
-            float distanceToTarget = shipToTarget.magnitude;
-            Vector3 directionToTarget = shipToTarget.normalized;
-            
-            // Blink twice the distance in the direction of the target
-            Vector3 newPosition = rb.transform.position + directionToTarget * (distanceToTarget * 2f);
-            rb.transform.position = newPosition;
-            
-            // Mirror the y rotation along the line perpendicular to the ship-tractorTarget line
-            Vector3 perpendicular = Vector3.Cross(directionToTarget, Vector3.up);
-            if (perpendicular.magnitude > 0.001f) // Avoid division by zero
+            // Check if blink is available (has charges and not on cooldown)
+            if (currentBlinkCharges > 0 && Time.time >= lastBlinkTime + blinkCooldownTime)
             {
-                perpendicular = perpendicular.normalized;
-                Vector3 currentForward = rb.transform.forward;
-                Vector3 mirroredForward = Vector3.Reflect(currentForward, perpendicular);
-                rb.transform.rotation = Quaternion.LookRotation(mirroredForward, Vector3.up);
+                // Start preview: enable indicator and start continuous updating
+                isBlinkPreviewing = true;
+                blinkIndicatorRenderer.enabled = true;
+                UpdateBlinkPreview();
             }
+            // If not available, isBlinkKeyHeld will be true and Update() will handle it when charges are available
         }
         else
         {
-            // Normal blink: move blinkDistance along the x-axis
-            Vector3 blinkOffset = rb.transform.TransformDirection(Vector3.right * blinkDistance);
-            rb.transform.position += blinkOffset;
+            // Key released: perform the actual blink if we were previewing
+            if (isBlinkPreviewing)
+            {
+                isBlinkPreviewing = false;
+                blinkIndicatorRenderer.enabled = false;
+                
+                // Consume a charge and set cooldown
+                currentBlinkCharges--;
+                lastBlinkTime = Time.time;
+                
+                //TODO Effects
+                if (isTractorConnected && tractorTarget != null)
+                {
+                    // Calculate direction from ship to tractor target
+                    Vector3 shipToTarget = tractorTarget.transform.position - rb.transform.position;
+                    float distanceToTarget = shipToTarget.magnitude;
+                    Vector3 directionToTarget = shipToTarget.normalized;
+                    
+                    // Blink twice the distance in the direction of the target
+                    Vector3 newPosition = rb.transform.position + directionToTarget * (distanceToTarget * 2f);
+                    rb.transform.position = newPosition;
+                    
+                    // Mirror the y rotation along the line perpendicular to the ship-tractorTarget line
+                    Vector3 perpendicular = Vector3.Cross(directionToTarget, Vector3.up);
+                    if (perpendicular.magnitude > 0.001f) // Avoid division by zero
+                    {
+                        perpendicular = perpendicular.normalized;
+                        Vector3 currentForward = rb.transform.forward;
+                        Vector3 mirroredForward = Vector3.Reflect(currentForward, perpendicular);
+                        rb.transform.rotation = Quaternion.LookRotation(mirroredForward, Vector3.up);
+                    }
+                }
+                else
+                {
+                    // Normal blink: move blinkDistance along the x-axis
+                    Vector3 blinkOffset = rb.transform.TransformDirection(Vector3.right * blinkDistance);
+                    rb.transform.position += blinkOffset;
+                }
+            }
         }
     }
     public void Fire(GameObject[] targets)
