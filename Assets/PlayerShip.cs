@@ -9,7 +9,23 @@ public class PlayerShip : MonoBehaviour
     public float rotationalVelMax = 1.0f;
     public float mass = 1000f;
     public float maxTorque = 100f;
+   
+    public float maxHealth = 100f;
+    public float maxSheilds = 100f;
+    private float curHealth = 100f;
+    private float curShields = 100f;
+
+    public float shieldRechargeRate = 10f;
+    public float shieldRechargeDelay = 3f;
+    public float shieldFadeOutTime = 2f;
+    public GameObject shieldObject;
     
+    private float lastShieldDamageTime = -999f;
+    private Material shieldMaterial;
+    private Color originalShieldColor;
+    private bool isShieldFading = false;
+    private float shieldFadeStartTime;
+
     public GameObject[] hardpoints;
     public GameObject[] weapons;
 
@@ -49,6 +65,10 @@ public class PlayerShip : MonoBehaviour
     private Renderer blinkIndicatorRenderer;
     CinemachineCamera defaultCamera; 
 
+    private Vector3 hitPos;
+    private Vector3 hitDir;
+
+
     CinemachineInputAxisController camInputController;
     void Awake()
     {
@@ -70,6 +90,20 @@ public class PlayerShip : MonoBehaviour
         GameObject blinkIndicator = blinkFocus.transform.Find("BlinkIndicator").gameObject;
         blinkIndicatorRenderer = blinkIndicator.GetComponent<Renderer>();
         blinkIndicatorRenderer.enabled = false;
+        
+        // Initialize shield system
+        curHealth = maxHealth;
+        curShields = maxSheilds;
+        if (shieldObject != null)
+        {
+            Renderer shieldRenderer = shieldObject.GetComponent<Renderer>();
+            if (shieldRenderer != null)
+            {
+                Debug.Log("DEBUG GOT SHIELD RENDER");
+                shieldMaterial = shieldRenderer.material;
+                originalShieldColor = shieldMaterial.color;
+            }
+        }
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -158,6 +192,38 @@ public class PlayerShip : MonoBehaviour
         if (isBlinkPreviewing)
         {
             UpdateBlinkPreview();
+        }
+        
+        // Handle shield recharging
+        if (curShields < maxSheilds && Time.time >= lastShieldDamageTime + shieldRechargeDelay)
+        {
+            curShields += shieldRechargeRate * Time.deltaTime;
+            curShields = Mathf.Min(curShields, maxSheilds);
+        }
+        
+        // Handle shield visual effects
+        if (isShieldFading && shieldMaterial != null)
+        {
+            float fadeProgress = (Time.time - shieldFadeStartTime) / shieldFadeOutTime;
+            if (fadeProgress >= 1f)
+            {
+                // Fade complete
+                isShieldFading = false;
+                Color finalColor = originalShieldColor;
+                finalColor.a = originalShieldColor.a;
+                shieldMaterial.color = finalColor;
+            }
+            else
+            {
+                // Fade from 50/255 alpha back to original alpha
+                float startAlpha = 50f / 255f;
+                float targetAlpha = originalShieldColor.a;
+                float currentAlpha = Mathf.Lerp(startAlpha, targetAlpha, fadeProgress);
+                
+                Color currentColor = originalShieldColor;
+                currentColor.a = currentAlpha;
+                shieldMaterial.color = currentColor;
+            }
         }
     }
     
@@ -271,6 +337,7 @@ public class PlayerShip : MonoBehaviour
             }
         }
     }
+    
     public void Fire(GameObject[] targets)
     {
         foreach (GameObject weapon in weapons)
@@ -279,8 +346,68 @@ public class PlayerShip : MonoBehaviour
             script.Fire(targets);
         }
     }
+    
     public void ToggleTractorState()
     {
         isTractorEnabled = !isTractorEnabled;
     }
+    
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameObject otherObject = collision.gameObject;
+        // Laser laser = otherObject.GetComponent<Laser>();
+        Rigidbody rb = otherObject.GetComponent<Rigidbody>();
+        // PlayerShip ship = otherObject.GetComponent<PlayerShip>();
+        // Ship only has collision damage for now
+        float damage = 0;
+        
+        if (rb != null)
+        {
+            Vector3 relVel = collision.relativeVelocity;
+            damage = rb.mass * relVel.magnitude; 
+            hitPos = collision.contacts[0].point;
+            hitDir = relVel.normalized;
+            DoDamage(damage);
+        }
+        
+    }
+    private void DoDamage(float damage)
+    {
+        if (curShields > 0)
+        {
+            // Shield takes damage first
+            float shieldDamage = Mathf.Min(damage, curShields);
+            curShields -= shieldDamage;
+            damage -= shieldDamage;
+            
+            // Record shield damage time for recharge delay
+            lastShieldDamageTime = Time.time;
+            
+            // Start shield visual effect
+            if (shieldMaterial != null && shieldDamage > 0)
+            {
+                Color flashColor = originalShieldColor;
+                flashColor.a = 50f / 255f;
+                shieldMaterial.color = flashColor;
+                isShieldFading = true;
+                shieldFadeStartTime = Time.time;
+            }
+            
+            Debug.Log("Shield damage: " + shieldDamage + " - Shields remaining: " + curShields);
+        }
+        
+        // Any remaining damage goes to health
+        if (damage > 0)
+        {
+            curHealth -= damage;
+            Debug.Log("Health damage: " + damage + " - Health remaining: " + curHealth);
+        }
+        
+        if (curHealth <= 0) {
+            Debug.Log("PLAYER SHIP DESTROYED!");
+            //TODO Add Losing.
+        }
+    }
+
+
 }

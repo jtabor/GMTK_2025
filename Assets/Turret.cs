@@ -43,7 +43,7 @@ public class Turret : MonoBehaviour
             return;
         
         Vector3 targetDirection = Vector3.right; // Default direction
-        
+        //TODO This lead calculation is wrong, but close, probably okay? 
         // If hasGimbal and we have targets, calculate aiming direction
         if (hasGimbal && targets != null && targets.Length > 0 && targets[0] != null)
         {

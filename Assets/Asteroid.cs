@@ -12,11 +12,17 @@ public class Asteroid : MonoBehaviour
 
     private Vector3 hitPos;
     private Vector3 hitDir;
+
+    public bool hasLaserImmunity = false;
+    public bool hasMissleImmunity = false;
+    public bool hasCollisionImmunity = false;
+
     private enum DamageSource
     {
         Collision,
         Laser,
-        Missle
+        Missle,
+        Shield  //These do no damage to objects, only to the shield itself
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -41,15 +47,16 @@ public class Asteroid : MonoBehaviour
         GameObject otherObject = collision.gameObject;
         Laser laser = otherObject.GetComponent<Laser>();
         Rigidbody rb = otherObject.GetComponent<Rigidbody>();
-        
+        PlayerShip ship = otherObject.GetComponent<PlayerShip>();
+
         float damage = 0;
         
-        if (laser != null)
+        if (laser != null && !hasLaserImmunity)
         {
             damage = laser.damage;
             DoDamage(damage, DamageSource.Laser, collision.relativeVelocity);
         }
-        else if (rb != null)
+        else if (rb != null && !hasCollisionImmunity)
         {
             Vector3 relVel = collision.relativeVelocity;
             damage = rb.mass * relVel.magnitude; 
@@ -59,10 +66,18 @@ public class Asteroid : MonoBehaviour
             hitDir = relVel.normalized;
             DoDamage(damage, DamageSource.Collision, collision.relativeVelocity);
         }
+        else if (ship != null)
+        {
+            //Don't do damage if it has shields left
+        
+        }
+         
         
     }
     private void DoDamage(float damage, DamageSource source, Vector3 hitDir)
     {
+        bool immune = false;
+        
         curHealth -= damage;
         Debug.Log("Asteroid new health: " + curHealth + " damage: " + damage);
         if (curHealth <= 0) {
