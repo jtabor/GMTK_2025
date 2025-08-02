@@ -30,14 +30,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7885567012953485420}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: 0.32259005, z: -0, w: 0.94653875}
-  m_LocalPosition: {x: 6.31, y: 0, z: -0.05}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 4174509259692923123}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 37.639, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!54 &493612322422754157
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -101,12 +101,16 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spawns:
-  - {fileID: 7885567012953485420}
+  - {fileID: 7684232590635533436, guid: 7f68172cb8a6d884085bc2d3e4fade22, type: 3}
+  - {fileID: 7684232590635533436, guid: 7f68172cb8a6d884085bc2d3e4fade22, type: 3}
   spawnsChances:
   - 1
-  numberOfSpawns: 1
+  - 1
+  numberOfSpawns: 2
   maxHealth: 204
   damageScale: 1
+  breakDamageScale: 0.01
+  breakAngleVariant: 1
 --- !u!114 &811194209141423644
 MonoBehaviour:
   m_ObjectHideFlags: 0
