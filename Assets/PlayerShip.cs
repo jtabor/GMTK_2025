@@ -4,6 +4,9 @@ using Unity.Cinemachine;
 
 public class PlayerShip : MonoBehaviour
 {
+    public RenderTexture minimapTexture;
+    public Camera minimapCamera;
+
     public Vector3 maxForce = new Vector3(0f,0f,0f);
     public float boostForce = 200f;
     public float rotationalVelMax = 1.0f;
@@ -75,7 +78,8 @@ public class PlayerShip : MonoBehaviour
     void Awake()
     {
         defaultCamera = FindFirstObjectByType<CinemachineCamera>();
- 
+        minimapCamera.targetTexture = minimapTexture;
+
         // defaultCamera = GetComponent<CinemachineCamera>();
         camInputController = defaultCamera.GetComponent<CinemachineInputAxisController>();
         rb = GetComponent<Rigidbody>();
