@@ -400,6 +400,7 @@ public class PlayerShip : MonoBehaviour
                 Debug.Log("hitDir: " + hitDir);
                 shieldMaterial.SetColor("_shieldColor", flashColor);
                 shieldMaterial.SetVector("_hitDir", -hitDir.normalized);
+                shieldMaterial.SetFloat("_hitStrength", 2);
                 isShieldFading = true;
                 shieldFadeStartTime = Time.time;
             }
