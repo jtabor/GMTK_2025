@@ -9,6 +9,15 @@ public class PlayerShip : MonoBehaviour
 
     public GameObject gameLogic;
     private AudioManager audioManager;   
+    
+    //CLAUDE - Make a feature to display the shield and health.  The health has 4 icons, and the shield has 2
+    // Display them in order they're in inside the arrays.
+    // For Shields don't display any shields if curShields <= 0, 1 if it's between 0 and 50%, and two if it's above 50%
+    // Do the same for the health, but split it in 4 instead.
+    
+    public GameObject[] blinkIcons;
+    public GameObject[] healthIcons;
+    public GameObject[] shieldIcons;
 
     public AudioClip engineNormalClip;
     public AudioClip engineBoostClip;
@@ -17,15 +26,17 @@ public class PlayerShip : MonoBehaviour
     public AudioClip shieldBreakClip;
     public AudioClip shieldHitClip;
 
-    public Vector3 maxForce = new Vector3(0f,0f,0f);
+    public Vector3 maxForce = new Vector3(100f,0f,100f);
     public float boostForce = 200f;
     public float rotationalVelMax = 1.0f;
     public float mass = 1000f;
     public float maxTorque = 100f;
-   
+    public float brakeDamping = 0.1f;
+    bool isBraking = false;
+
     public float maxHealth = 100f;
     public float maxSheilds = 100f;
-    private float curHealth = 100f;
+    public float curHealth = 100f;
     private float curShields = 100f;
 
     public float shieldRechargeRate = 10f;
@@ -83,12 +94,16 @@ public class PlayerShip : MonoBehaviour
     private Vector3 hitPos;
     private Vector3 hitDir;
 
+    private float invulnerableTimestamp = -99f;
 
     CinemachineInputAxisController camInputController;
+    Collider shipCollider;
     void Awake()
     {
         defaultCamera = FindFirstObjectByType<CinemachineCamera>();
         minimapCamera.targetTexture = minimapTexture;
+        
+        shipCollider = gameObject.GetComponent<Collider>();
 
         // defaultCamera = GetComponent<CinemachineCamera>();
         camInputController = defaultCamera.GetComponent<CinemachineInputAxisController>();
@@ -97,9 +112,19 @@ public class PlayerShip : MonoBehaviour
         rb.maxAngularVelocity = rotationalVelMax;
         //Maybe set the CG here?  You can do it manually
         //
-        weapons = new GameObject[hardpoints.Length];
+        // weapons = new GameObject[hardpoints.Length];
+        for (int i = 0; i < weapons.Length; i++)
+        {
+            weapons[i] = Instantiate(weapons[i],hardpoints[i].transform);
+            Turret t = weapons[i].GetComponent<Turret>();
+            if (t != null)
+            {
+                t.gameLogic = gameLogic;
+            }
+        }
         tractorIndicatorRenderer = tractorIndicator.GetComponent<Renderer>();
         currentBlinkCharges = maxBlinkCharges;
+        UpdateBlinkChargeDisplay();
         
         blinkFocus = Instantiate(blinkFocus, transform.position, transform.rotation);
 
@@ -110,12 +135,13 @@ public class PlayerShip : MonoBehaviour
         // Initialize shield system
         curHealth = maxHealth;
         curShields = maxSheilds;
+        UpdateHealthDisplay();
+        UpdateShieldDisplay();
         if (shieldObject != null)
         {
             Renderer shieldRenderer = shieldObject.GetComponent<Renderer>();
             if (shieldRenderer != null)
             {
-                Debug.Log("DEBUG GOT SHIELD RENDER");
                 shieldMaterial = shieldRenderer.material;
                 originalShieldColor = shieldMaterial.GetColor("_shieldColor");
             }
@@ -133,6 +159,18 @@ public class PlayerShip : MonoBehaviour
     void Update()
     {
         prevShields = curShields;
+
+        if (isBraking)
+        {
+            Vector3 brakeForce = - rb.linearVelocity * brakeDamping;
+            rb.AddForce(brakeForce);
+        }
+        
+        if (!shipCollider.enabled && Time.time > invulnerableTimestamp)
+        {
+            shipCollider.enabled = true;
+        }
+
         rb.AddForce(currentForce);
         rb.AddTorque(new Vector3(0,currentRotVel,0));
         if (tractorTarget == null)
@@ -192,6 +230,7 @@ public class PlayerShip : MonoBehaviour
         {
             currentBlinkCharges++;
             lastRechargeTime = Time.time;
+            UpdateBlinkChargeDisplay();
         }
         
         // Check if blink key is held but we couldn't preview due to no charges/cooldown
@@ -216,8 +255,14 @@ public class PlayerShip : MonoBehaviour
         // Handle shield recharging
         if (curShields < maxSheilds && Time.time >= lastShieldDamageTime + shieldRechargeDelay)
         {
+            float previousShields = curShields;
             curShields += shieldRechargeRate * Time.deltaTime;
             curShields = Mathf.Min(curShields, maxSheilds);
+            
+            if (previousShields != curShields)
+            {
+                UpdateShieldDisplay();
+            }
         }
         
         // Handle shield visual effects
@@ -268,6 +313,81 @@ public class PlayerShip : MonoBehaviour
         blinkFocus.transform.position = targetPosition;
     }
     
+    private void UpdateBlinkChargeDisplay()
+    {
+        if (blinkIcons == null) return;
+        
+        for (int i = 0; i < blinkIcons.Length; i++)
+        {
+            if (blinkIcons[i] != null)
+            {
+                blinkIcons[i].SetActive(i < currentBlinkCharges);
+            }
+        }
+    }
+    
+    private void UpdateShieldDisplay()
+    {
+        if (shieldIcons == null) return;
+        
+        int shieldsToShow = 0;
+        if (curShields > 0)
+        {
+            float shieldPercentage = curShields / maxSheilds;
+            if (shieldPercentage > 0.5f)
+            {
+                shieldsToShow = 2;
+            }
+            else
+            {
+                shieldsToShow = 1;
+            }
+        }
+        
+        for (int i = 0; i < shieldIcons.Length; i++)
+        {
+            if (shieldIcons[i] != null)
+            {
+                shieldIcons[i].SetActive(i < shieldsToShow);
+            }
+        }
+    }
+    
+    private void UpdateHealthDisplay()
+    {
+        if (healthIcons == null) return;
+        
+        int healthIconsToShow = 0;
+        if (curHealth > 0)
+        {
+            float healthPercentage = curHealth / maxHealth;
+            if (healthPercentage > 0.75f)
+            {
+                healthIconsToShow = 4;
+            }
+            else if (healthPercentage > 0.5f)
+            {
+                healthIconsToShow = 3;
+            }
+            else if (healthPercentage > 0.25f)
+            {
+                healthIconsToShow = 2;
+            }
+            else
+            {
+                healthIconsToShow = 1;
+            }
+        }
+        
+        for (int i = 0; i < healthIcons.Length; i++)
+        {
+            if (healthIcons[i] != null)
+            {
+                healthIcons[i].SetActive(i < healthIconsToShow);
+            }
+        }
+    }
+    
     public void ReplaceHardpoint(GameObject weapon, int index)
     {
         
@@ -276,14 +396,16 @@ public class PlayerShip : MonoBehaviour
         weapon.transform.SetParent(hardpoints[index].transform, false);
 
     }
-    public void HandleControlInput(Vector3 control_input, float rotation, bool boostActive)
+    public void HandleControlInput(Vector3 control_input, float rotation, bool boostActive, bool brakeActive)
     {
         currentForce = transform.TransformDirection(Vector3.Scale(maxForce,control_input));
         if (boostActive)
         {
             currentForce = currentForce + transform.TransformDirection(new Vector3(boostForce,0f,0f));
         }
-        currentRotVel = rotation*maxTorque; 
+        currentRotVel = rotation*maxTorque;
+        
+        isBraking = brakeActive;
     }
 
     public void HandleCameraInput(bool slaveToMouse, float scrollDelta)
@@ -311,6 +433,10 @@ public class PlayerShip : MonoBehaviour
                 blinkIndicatorRenderer.enabled = true;
                 UpdateBlinkPreview();
             }
+            else
+            {
+                blinkIndicatorRenderer.enabled = false;
+            }
             // If not available, isBlinkKeyHeld will be true and Update() will handle it when charges are available
         }
         else
@@ -324,6 +450,7 @@ public class PlayerShip : MonoBehaviour
                 // Consume a charge and set cooldown
                 currentBlinkCharges--;
                 lastBlinkTime = Time.time;
+                UpdateBlinkChargeDisplay();
                 
                 //TODO Effects
                 if (isTractorConnected && tractorTarget != null)
@@ -352,6 +479,8 @@ public class PlayerShip : MonoBehaviour
                     // Normal blink: move blinkDistance along the x-axis
                     Vector3 blinkOffset = rb.transform.TransformDirection(Vector3.right * blinkDistance);
                     rb.transform.position += blinkOffset;
+                    invulnerableTimestamp = Time.time + 0.5f;
+                    // shipCollider.enabled = false;
                 }
             }
         }
@@ -437,6 +566,7 @@ public class PlayerShip : MonoBehaviour
             }
             
             Debug.Log("Shield damage: " + shieldDamage + " - Shields remaining: " + curShields);
+            UpdateShieldDisplay();
         }
         
         // Any remaining damage goes to health
@@ -444,6 +574,7 @@ public class PlayerShip : MonoBehaviour
         {
             curHealth -= damage;
             Debug.Log("Health damage: " + damage + " - Health remaining: " + curHealth);
+            UpdateHealthDisplay();
         }
         
         if (curHealth <= 0) {

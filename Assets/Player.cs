@@ -18,16 +18,19 @@ public class Player : MonoBehaviour
 
     public Sprite targetSprite;
     public Sprite tractorSprite;
+    
+    public GameObject pauseIcon;
+    public GameObject escToStartText;
 
     //DEBUG
-    public GameObject[] turrets;
+    // public GameObject[] turrets;
 
     private int curTurret= 0;
 
     public enum SelectionMode{
         TARGET,
         TRACTOR,
-        GOAL
+        // GOAL
     }
     private string[] modeStrings = {"TRGT", "TRCTR","GL"};
     public SelectionMode curMode = SelectionMode.TARGET;
@@ -50,7 +53,13 @@ public class Player : MonoBehaviour
     {
         selectedTargets.RemoveAll(target => target == null);
         selectedGoals.RemoveAll(goal => goal == null);
-
+        if (Keyboard.current.enterKey.wasPressedThisFrame){
+           if (curPauseState == PauseState.GAME_PAUSED)
+           {
+                curPauseState = PauseState.NONE;
+                Time.timeScale = 1f;
+           }
+        }
         if (Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (curPauseState == PauseState.NONE)
@@ -62,6 +71,24 @@ public class Player : MonoBehaviour
                 curPauseState = PauseState.NONE;
             }
         }
+        
+        if (curPauseState == PauseState.NONE)
+        {
+            pauseIcon.SetActive(false);
+            escToStartText.SetActive(false);
+        }
+        else if (curPauseState == PauseState.PLAYER_PAUSED)
+        {
+            pauseIcon.SetActive(true);
+            escToStartText.SetActive(true);
+
+        }
+        else
+        {
+            pauseIcon.SetActive(true);
+            escToStartText.SetActive(false);
+        }
+
 
         if (curPauseState == PauseState.NONE)
             Time.timeScale = 1f;
@@ -92,20 +119,21 @@ public class Player : MonoBehaviour
                     movement += new Vector3(0f,0f,1f); 
                 if (Keyboard.current.eKey.isPressed)
                     movement += new Vector3(0f,0f,-1f); 
+               
                 
-                ship.HandleControlInput(movement,rotation, Keyboard.current.shiftKey.isPressed);
+                ship.HandleControlInput(movement,rotation, Keyboard.current.shiftKey.isPressed, Keyboard.current.cKey.isPressed);
                 
                 //DEBUG 
-                if (Keyboard.current.fKey.wasPressedThisFrame)
-                {
-                    curTurret = (curTurret + 1) % turrets.Length;
-                    GameObject newTurret = Instantiate(turrets[curTurret]);
-                    Turret t = newTurret.GetComponent<Turret>();
-                    t.hasGimbal = true;
-                    t.gameLogic = gameLogic;
-                    ship.ReplaceHardpoint(newTurret,0);
-
-                }
+                // if (Keyboard.current.fKey.wasPressedThisFrame)
+                // {
+                //     curTurret = (curTurret + 1) % turrets.Length;
+                //     GameObject newTurret = Instantiate(turrets[curTurret]);
+                //     Turret t = newTurret.GetComponent<Turret>();
+                //     t.hasGimbal = true;
+                //     t.gameLogic = gameLogic;
+                //     ship.ReplaceHardpoint(newTurret,0);
+                //
+                // }
                 if (Keyboard.current.gKey.wasPressedThisFrame || Keyboard.current.gKey.wasReleasedThisFrame)
                 {
                     if (ship != null)
@@ -202,7 +230,7 @@ public class Player : MonoBehaviour
                 int modeCount = System.Enum.GetValues(typeof(SelectionMode)).Length;
                 curMode = (SelectionMode)(((int)curMode + 1) % modeCount);
             }
-            modeText.text = "MODE: " + modeStrings[(int)curMode]; 
+            modeText.text = "SEL MODE: " + modeStrings[(int)curMode]; 
 }
         
         if (selectedTractor != null) 
@@ -213,6 +241,20 @@ public class Player : MonoBehaviour
         DrawSelectedTargets();
 
     }
+    public void SetGamePause(bool isPaused)
+    {
+        if (isPaused && curPauseState == PauseState.NONE)
+        {
+            curPauseState = PauseState.GAME_PAUSED;
+            Time.timeScale = 0f;
+        }
+        else if (!isPaused && curPauseState == PauseState.GAME_PAUSED)
+        {
+            curPauseState = PauseState.NONE;
+            Time.timeScale = 1f;
+        }
+    }
+
     void DrawGameObject(Sprite cornerSprite, GameObject go, string text)
     {
         if (mainUi == null) return;

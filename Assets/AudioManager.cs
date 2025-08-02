@@ -8,7 +8,7 @@ public class AudioManager : MonoBehaviour
     [Range(0f, 1f)]
     public float fxVolume;
     [Range(0f, 1f)]
-    public float musicVolume;
+    public float musicVolume = 0.25f;
     [Range(0f, 1f)]
     public float environmentVolume;
    
@@ -34,8 +34,6 @@ public class AudioManager : MonoBehaviour
         volumes[(int) AudioSourceType.MUSIC] = musicVolume; 
         volumes[(int) AudioSourceType.ENVIRONMENT] = environmentVolume; 
         
-        for (int i = 0; i < volumes.Length; i++)
-            Debug.Log("DEBUG VOLUME: " + i + "  " + volumes[i]);
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.loop = false;
         musicSource.volume = musicVolume;
@@ -71,14 +69,12 @@ public class AudioManager : MonoBehaviour
     public void PlayEffectClip(AudioClip clip, AudioSourceType type, float volume = -1f)
     {
         float volumeToPlay = volume >= 0 ? volume : volumes[(int) type];
-        Debug.Log("DEBUG: VOLUME: " + volumeToPlay);
         source.PlayOneShot(clip, volumeToPlay);
     }
     
     public void PlayEffectClip(AudioClip clip, AudioSourceType type, Vector3 location, float volume = -1f)
     {
         float volumeToPlay = volume >= 0 ? volume : volumes[(int) type];
-        Debug.Log("DEBUG: VOLUME: " + volumeToPlay);
         AudioSource.PlayClipAtPoint(clip, location, volumeToPlay);
     }
 }

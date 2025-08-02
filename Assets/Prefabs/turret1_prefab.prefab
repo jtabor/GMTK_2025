@@ -79,10 +79,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   bulletSpawns: []
   projectile: {fileID: 3751827086965908117, guid: cf2ef9ebd83cd2018bb75c83b4a49865, type: 3}
-  cooldownTimeMs: 500
+  cooldownTimeMs: 100
   muzzleVelocity: 10
   gameLogic: {fileID: 0}
-  laserClip: {fileID: 8300000, guid: 6cc64e051074f2473bf56fb756437b5d, type: 3}
+  laserClip: {fileID: 8300000, guid: 940f646afccbf58a0b56d916af165ed0, type: 3}
   hasGimbal: 0
 --- !u!1001 &4940296665967868357
 PrefabInstance:

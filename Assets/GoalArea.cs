@@ -58,11 +58,15 @@ public class GoalArea : MonoBehaviour
         Vector3 borderOriginalScale = borderInstance.transform.localScale; 
 
         borderInstance.transform.localScale = new Vector3(borderOriginalScale.x * distance , borderOriginalScale.y , borderOriginalScale.z );
+        Vector3 offset = borderInstance.transform.position - transform.position;
+        Vector3 rotatedOffset = transform.rotation*offset;
 
         if (direction != Vector3.zero)
         {
-            borderInstance.transform.rotation = Quaternion.FromToRotation(Vector3.right, direction);
+            borderInstance.transform.rotation = Quaternion.FromToRotation(Vector3.right, direction)*transform.rotation;
+            borderInstance.transform.position = transform.position + rotatedOffset;  
         }
+        
 
     }
 
