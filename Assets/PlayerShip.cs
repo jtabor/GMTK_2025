@@ -95,6 +95,11 @@ public class PlayerShip : MonoBehaviour
     private Vector3 hitDir;
 
     private float invulnerableTimestamp = -99f;
+    private ParticleSystem engineParticleSystem;
+    public float engineEmmisionRateOverTime = 50f;
+    public float engineEmmisionRateOverTimeBoost = 100f;
+    public Color engineNormalColor;
+    public Color engineBoostColor;
 
     CinemachineInputAxisController camInputController;
     Collider shipCollider;
@@ -152,7 +157,8 @@ public class PlayerShip : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        audioManager = gameLogic.GetComponent<AudioManager>();  
+        audioManager = gameLogic.GetComponent<AudioManager>();
+        engineParticleSystem = GetComponent<ParticleSystem>();
     }
 
     // Update is called once per frame
@@ -399,9 +405,32 @@ public class PlayerShip : MonoBehaviour
     public void HandleControlInput(Vector3 control_input, float rotation, bool boostActive, bool brakeActive)
     {
         currentForce = transform.TransformDirection(Vector3.Scale(maxForce,control_input));
+        ParticleSystem.MainModule mainModule = engineParticleSystem.main;
+        ParticleSystem.EmissionModule emissionModule = engineParticleSystem.emission;
+        if (currentForce.magnitude > 0)
+        {
+            mainModule.startColor = engineNormalColor;
+            emissionModule.rateOverTime = engineEmmisionRateOverTime;
+        }
+
         if (boostActive)
         {
             currentForce = currentForce + transform.TransformDirection(new Vector3(boostForce,0f,0f));
+            emissionModule.rateOverTime = engineEmmisionRateOverTimeBoost;
+        }
+        if (Vector3.Dot(currentForce, transform.localToWorldMatrix * (new Vector3(1, 0, 0))) > 0)
+        {
+            if (!emissionModule.enabled)
+            {
+                emissionModule.enabled = true;
+            }
+        }
+        else
+        {
+            if (emissionModule.enabled)
+            {
+                emissionModule.enabled = false;
+            }
         }
         currentRotVel = rotation*maxTorque;
         
@@ -559,7 +588,7 @@ public class PlayerShip : MonoBehaviour
                 flashColor.a = 50f / 255f;
                 Debug.Log("hitDir: " + hitDir);
                 shieldMaterial.SetColor("_shieldColor", flashColor);
-                shieldMaterial.SetVector("_hitDir", -hitDir.normalized);
+                shieldMaterial.SetVector("_hitDir", transform.worldToLocalMatrix.MultiplyVector(-hitDir.normalized));
                 shieldMaterial.SetFloat("_hitStrength", 2);
                 isShieldFading = true;
                 shieldFadeStartTime = Time.time;
