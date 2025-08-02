@@ -107,7 +107,7 @@ public class PlayerShip : MonoBehaviour
             {
                 Debug.Log("DEBUG GOT SHIELD RENDER");
                 shieldMaterial = shieldRenderer.material;
-                originalShieldColor = shieldMaterial.color;
+                originalShieldColor = shieldMaterial.GetColor("_shieldColor");
             }
         }
     }
@@ -218,7 +218,7 @@ public class PlayerShip : MonoBehaviour
                 isShieldFading = false;
                 Color finalColor = originalShieldColor;
                 finalColor.a = originalShieldColor.a;
-                shieldMaterial.color = finalColor;
+                shieldMaterial.SetColor("_shieldColor", finalColor);
             }
             else
             {
@@ -229,7 +229,7 @@ public class PlayerShip : MonoBehaviour
                 
                 Color currentColor = originalShieldColor;
                 currentColor.a = currentAlpha;
-                shieldMaterial.color = currentColor;
+                shieldMaterial.SetColor("_shieldColor", currentColor);
             }
         }
     }
@@ -380,11 +380,11 @@ public class PlayerShip : MonoBehaviour
             damage = rb.mass * relVel.magnitude; 
             hitPos = collision.contacts[0].point;
             hitDir = relVel.normalized;
-            DoDamage(damage);
+            DoDamage(damage, hitDir);
         }
         
     }
-    private void DoDamage(float damage)
+    private void DoDamage(float damage, Vector3 hitDir)
     {
         if (curShields > 0)
         {
@@ -401,7 +401,10 @@ public class PlayerShip : MonoBehaviour
             {
                 Color flashColor = originalShieldColor;
                 flashColor.a = 50f / 255f;
-                shieldMaterial.color = flashColor;
+                Debug.Log("hitDir: " + hitDir);
+                shieldMaterial.SetColor("_shieldColor", flashColor);
+                shieldMaterial.SetVector("_hitDir", -hitDir.normalized);
+                shieldMaterial.SetFloat("_hitStrength", 2);
                 isShieldFading = true;
                 shieldFadeStartTime = Time.time;
             }
