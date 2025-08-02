@@ -7,6 +7,16 @@ public class PlayerShip : MonoBehaviour
     public RenderTexture minimapTexture;
     public Camera minimapCamera;
 
+    public GameObject gameLogic;
+    private AudioManager audioManager;   
+
+    public AudioClip engineNormalClip;
+    public AudioClip engineBoostClip;
+    public AudioClip tractorEngageClip;
+    public AudioClip tractorSustainClip;
+    public AudioClip shieldBreakClip;
+    public AudioClip shieldHitClip;
+
     public Vector3 maxForce = new Vector3(0f,0f,0f);
     public float boostForce = 200f;
     public float rotationalVelMax = 1.0f;
@@ -110,11 +120,13 @@ public class PlayerShip : MonoBehaviour
                 originalShieldColor = shieldMaterial.GetColor("_shieldColor");
             }
         }
+
+
     }
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-         
+        audioManager = gameLogic.GetComponent<AudioManager>();  
     }
 
     // Update is called once per frame
@@ -392,7 +404,22 @@ public class PlayerShip : MonoBehaviour
             float shieldDamage = Mathf.Min(damage, curShields);
             curShields -= shieldDamage;
             damage -= shieldDamage;
-            
+
+            if (curShields <= 0)
+            {
+                if (audioManager != null && shieldBreakClip != null)
+                {
+                    audioManager.PlayEffectClip(shieldBreakClip, AudioManager.AudioSourceType.EFFECT, transform.position, -1f);
+                }
+            }
+            else
+            {
+                if (audioManager != null && shieldHitClip != null)
+                {
+                    audioManager.PlayEffectClip(shieldHitClip, AudioManager.AudioSourceType.EFFECT, transform.position, -1f);
+                }
+            }
+
             // Record shield damage time for recharge delay
             lastShieldDamageTime = Time.time;
             

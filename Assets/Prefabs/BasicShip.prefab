@@ -41,7 +41,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7848688460386163327}
   - component: {fileID: 8468241337786417534}
-  - component: {fileID: 5065621841662040877}
   - component: {fileID: 4970835712479812247}
   m_Layer: 0
   m_Name: MinimapCamera
@@ -116,14 +115,6 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
---- !u!81 &5065621841662040877
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4928187170280911150}
-  m_Enabled: 1
 --- !u!114 &4970835712479812247
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,6 +214,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   minimapTexture: {fileID: 0}
   minimapCamera: {fileID: 8468241337786417534}
+  gameLogic: {fileID: 0}
+  engineNormalClip: {fileID: 0}
+  engineBoostClip: {fileID: 0}
+  tractorEngageClip: {fileID: 0}
+  tractorSustainClip: {fileID: 0}
+  shieldBreakClip: {fileID: 8300000, guid: 5b66ef704f6edf17aa48a436e036f774, type: 3}
+  shieldHitClip: {fileID: 8300000, guid: ef5a5161885e92c9db27944d70a5f2bf, type: 3}
   maxForce: {x: 0, y: 0, z: 0}
   boostForce: 200
   rotationalVelMax: 1

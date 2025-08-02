@@ -5,6 +5,7 @@ using TMPro;
 
 public class Player : MonoBehaviour
 {
+    public GameObject gameLogic;
 
     public GameObject controlledObject;
     private float zoomDegrees = 90;
@@ -101,6 +102,7 @@ public class Player : MonoBehaviour
                     GameObject newTurret = Instantiate(turrets[curTurret]);
                     Turret t = newTurret.GetComponent<Turret>();
                     t.hasGimbal = true;
+                    t.gameLogic = gameLogic;
                     ship.ReplaceHardpoint(newTurret,0);
 
                 }

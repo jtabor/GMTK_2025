@@ -2,11 +2,15 @@ using UnityEngine;
 
 public class Turret : MonoBehaviour
 {
-    
     public GameObject[] bulletSpawns; 
     public GameObject projectile;
     public float cooldownTimeMs = 500f;
     public float muzzleVelocity = 10f;
+
+    public GameObject gameLogic;
+    private AudioManager audioManager;   
+ 
+    public AudioClip laserClip;
     
     private float lastFireTime = 0f;
     
@@ -27,6 +31,9 @@ public class Turret : MonoBehaviour
         
         bulletSpawns = bulletSpawnList.ToArray();
         initialRotation = transform.rotation; 
+
+        audioManager = gameLogic.GetComponent<AudioManager>();  
+
     }
 
     void Update()
@@ -90,6 +97,12 @@ public class Turret : MonoBehaviour
                 GameObject bullet = Instantiate(projectile, spawnPoint.transform.position, spawnPoint.transform.rotation);
                 bullet.tag = "Player";
                 Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
+                
+                if (audioManager != null && laserClip != null)
+                {
+                    audioManager.PlayEffectClip(laserClip, AudioManager.AudioSourceType.EFFECT, transform.position, -1f);
+                }
+                
                 if (bulletRb != null)
                 {
                     bulletRb.isKinematic = false;

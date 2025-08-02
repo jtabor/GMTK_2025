@@ -124,6 +124,7 @@ Material:
     - _ZTest: 8
     - _ZWrite: 0
     - _ZWriteControl: 0
+    - _hitStrength: 0
     m_Colors:
     - _BaseColor: {r: 0, g: 0.9811892, b: 1, a: 0}
     - _Color: {r: 0, g: 0.9811892, b: 1, a: 0}
@@ -132,7 +133,7 @@ Material:
     - _ShieldColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}
     - _hitDir: {r: 1, g: 0, b: 0, a: 0}
-    - _shieldColor: {r: 0, g: 0.54073745, b: 0.8396226, a: 0}
+    - _shieldColor: {r: 0, g: 0.7627606, b: 0.8392157, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &3624386583101034646

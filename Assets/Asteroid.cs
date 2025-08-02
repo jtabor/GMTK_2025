@@ -17,6 +17,11 @@ public class Asteroid : MonoBehaviour
     private Vector3 hitPos;
     private Vector3 hitDir;
 
+    public GameObject gameLogic;
+    private AudioManager audioManager;   
+    public AudioClip asteroidDestroyedClip;
+    public AudioClip asteroidHitClip;
+
     public bool hasLaserImmunity = false;
     public bool hasMissleImmunity = false;
     public bool hasCollisionImmunity = false;
@@ -32,6 +37,7 @@ public class Asteroid : MonoBehaviour
     void Start()
     {
         curHealth = maxHealth;
+        audioManager = gameLogic.GetComponent<AudioManager>();  
     }
 
     // Update is called once per frame
@@ -92,9 +98,24 @@ public class Asteroid : MonoBehaviour
         
         curHealth -= damage;
         Debug.Log("Asteroid new health: " + curHealth + " damage: " + damage);
+        
         if (curHealth <= 0) {
             DestroyObject(source, hitDir, damage);
+                    
+            if (audioManager != null && asteroidDestroyedClip != null)
+            {
+                audioManager.PlayEffectClip(asteroidDestroyedClip, AudioManager.AudioSourceType.EFFECT, transform.position, -1f);
+            }
+
         }
+        else{
+
+            if (audioManager != null && asteroidHitClip != null)
+            {
+                audioManager.PlayEffectClip(asteroidHitClip, AudioManager.AudioSourceType.EFFECT, transform.position, -1f);
+            }
+        }
+
     }
     private GameObject GenerateSpawn()
     {

@@ -111,6 +111,12 @@ MonoBehaviour:
   damageScale: 1
   breakDamageScale: 0.01
   breakAngleVariant: 1
+  gameLogic: {fileID: 0}
+  asteroidDestroyedClip: {fileID: 8300000, guid: cfabb66362b8dcb1988d155d452abe3c, type: 3}
+  asteroidHitClip: {fileID: 8300000, guid: 954d75dab49f87783930ca6b3c1f3603, type: 3}
+  hasLaserImmunity: 0
+  hasMissleImmunity: 0
+  hasCollisionImmunity: 0
 --- !u!114 &811194209141423644
 MonoBehaviour:
   m_ObjectHideFlags: 0
