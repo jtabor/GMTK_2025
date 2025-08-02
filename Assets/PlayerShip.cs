@@ -19,7 +19,9 @@ public class PlayerShip : MonoBehaviour
     public float shieldRechargeDelay = 3f;
     public float shieldFadeOutTime = 2f;
     public GameObject shieldObject;
-    
+
+    //To prevent race conditions on collisions
+    private float prevShields = 0f;
     private float lastShieldDamageTime = -999f;
     private Material shieldMaterial;
     private Color originalShieldColor;
@@ -114,6 +116,7 @@ public class PlayerShip : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        prevShields = curShields;
         rb.AddForce(currentForce);
         rb.AddTorque(new Vector3(0,currentRotVel,0));
         if (tractorTarget == null)
@@ -351,7 +354,13 @@ public class PlayerShip : MonoBehaviour
     {
         isTractorEnabled = !isTractorEnabled;
     }
-    
+   
+    //Check if there are sheilds left for applying damage to other stuff
+    public bool HasShields()
+    {   
+        return prevShields > 0;
+    }
+
     private void OnCollisionEnter(Collision collision)
     {
         GameObject otherObject = collision.gameObject;
@@ -361,7 +370,7 @@ public class PlayerShip : MonoBehaviour
         // Ship only has collision damage for now
         float damage = 0;
         
-        if (rb != null)
+        if (rb != null && otherObject.tag != "Player")
         {
             Vector3 relVel = collision.relativeVelocity;
             damage = rb.mass * relVel.magnitude; 

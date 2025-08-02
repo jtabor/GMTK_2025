@@ -33,7 +33,7 @@ public class Turret : MonoBehaviour
     {
             
     }
-    
+
     public void Fire(GameObject[] targets)
     {
         if (Time.time * 1000f - lastFireTime < cooldownTimeMs)
@@ -88,6 +88,7 @@ public class Turret : MonoBehaviour
             if (spawnPoint != null)
             {
                 GameObject bullet = Instantiate(projectile, spawnPoint.transform.position, spawnPoint.transform.rotation);
+                bullet.tag = "Player";
                 Rigidbody bulletRb = bullet.GetComponent<Rigidbody>();
                 if (bulletRb != null)
                 {

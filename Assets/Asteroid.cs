@@ -56,7 +56,7 @@ public class Asteroid : MonoBehaviour
             damage = laser.damage;
             DoDamage(damage, DamageSource.Laser, collision.relativeVelocity);
         }
-        else if (rb != null && !hasCollisionImmunity)
+        else if (rb != null && ship == null && !hasCollisionImmunity)
         {
             Vector3 relVel = collision.relativeVelocity;
             damage = rb.mass * relVel.magnitude; 
@@ -69,14 +69,22 @@ public class Asteroid : MonoBehaviour
         else if (ship != null)
         {
             //Don't do damage if it has shields left
-        
+            if (!ship.HasShields() && rb != null)
+            {
+                Vector3 relVel = collision.relativeVelocity;
+                damage = rb.mass * relVel.magnitude; 
+                // Debug.Log("Asteroid hit - Damage: " + damage);
+                // Use the first contact point (assuming we are convex, this is good enough)
+                hitPos = collision.contacts[0].point;
+                hitDir = relVel.normalized;
+                DoDamage(damage, DamageSource.Collision, collision.relativeVelocity);
+            }
         }
          
         
     }
     private void DoDamage(float damage, DamageSource source, Vector3 hitDir)
     {
-        bool immune = false;
         
         curHealth -= damage;
         Debug.Log("Asteroid new health: " + curHealth + " damage: " + damage);
