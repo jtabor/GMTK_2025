@@ -196,5 +196,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9160c156de49cb320851bb3dcad6f029, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  spawns: []
+  spawnsChances: []
+  numberOfSpawns: 0
   maxHealth: 300
   damageScale: 1
+  breakDamageScale: 0.01
+  breakAngleVariant: 1

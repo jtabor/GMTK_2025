@@ -1,4 +1,6 @@
+using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Asteroid : MonoBehaviour
 {
@@ -8,6 +10,8 @@ public class Asteroid : MonoBehaviour
     public float maxHealth = 100f;
     private float curHealth = 100f;
     public float damageScale = 1f;
+    public float breakDamageScale = 0.01f;
+    public float breakAngleVariant = 0.5f; // Radian
     private float endTime = 0f;
 
     private Vector3 hitPos;
@@ -66,7 +70,6 @@ public class Asteroid : MonoBehaviour
         curHealth -= damage;
         // Debug.Log("Asteroid new health: " + curHealth);
         if (curHealth <= 0) {
-            Debug.Log("Asteroid Destroyed");
             DestroyObject(source, hitDir, damage);
         }
     }
@@ -77,13 +80,17 @@ public class Asteroid : MonoBehaviour
     }
     private void DestroyObject(DamageSource damageSource, Vector3 hitDir, float damage)
     {
+        endTime = 0;
         ParticleSystem ps = gameObject.GetComponent<ParticleSystem>();
-        ParticleSystem.ShapeModule psShape = ps.shape;
-        psShape.position = transform.worldToLocalMatrix.MultiplyPoint(hitPos);
-        psShape.rotation = Quaternion.FromToRotation(new Vector3(0, 0, -1), transform.worldToLocalMatrix.MultiplyPoint(hitDir)).eulerAngles;
-        // psShape.rotation = new Vector3(-90, 0, 0);
-        ps.Play();
-        endTime = ps.main.startLifetime.constant + ps.main.duration;
+        if (ps != null)
+        {
+            ParticleSystem.ShapeModule psShape = ps.shape;
+            psShape.position = transform.worldToLocalMatrix.MultiplyPoint(hitPos);
+            psShape.rotation = Quaternion.FromToRotation(new Vector3(0, 0, -1), transform.worldToLocalMatrix.MultiplyPoint(hitDir)).eulerAngles;
+            // psShape.rotation = new Vector3(-90, 0, 0);
+            ps.Play();
+            endTime = ps.main.startLifetime.constant + ps.main.duration;
+        }
         // Disable it as collider
         Collider collider = gameObject.GetComponent<Collider>();
         collider.enabled = false;
@@ -96,15 +103,12 @@ public class Asteroid : MonoBehaviour
             // TODO: add a random rotation
             GameObject instance = Instantiate(spawnPre, transform.position, transform.rotation);
             Rigidbody rb = instance.GetComponent<Rigidbody>();
-            // rb.linearVelocity = GetComponent<Rigidbody>().linearVelocity + hitDir.normalized * damage;
+            Debug.Log(Mathf.Rad2Deg * Random.Range(-breakAngleVariant, breakAngleVariant));
+            rb.linearVelocity = GetComponent<Rigidbody>().linearVelocity + Quaternion.AngleAxis(Mathf.Rad2Deg * Random.Range(-breakAngleVariant, breakAngleVariant), new Vector3(0.0f, 1.0f, 0.0f)) * (hitDir.normalized * damage * breakDamageScale);
+            // assume we progress half second
+            instance.transform.position += rb.linearVelocity * 0.2f;
             // TODO: make them inherent angular momentum
-            Debug.Log(transform.position);
-            Debug.Log(instance.transform.position);
-            Debug.Log(instance.GetComponentInChildren<MeshRenderer>().enabled);
-            Debug.Log(curHealth);
-            Debug.Log("Spawn");
         }
-        Debug.Log(endTime);
         // Destroy(gameObject);
     }
 }
