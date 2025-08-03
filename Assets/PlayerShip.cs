@@ -1,5 +1,6 @@
 using UnityEngine;
 using Unity.Cinemachine;
+using Unity.Mathematics;
 
 
 public class PlayerShip : MonoBehaviour
@@ -68,6 +69,7 @@ public class PlayerShip : MonoBehaviour
     public float tractorDamping = 50f;
     public GameObject tractorIndicator;
     private Renderer tractorIndicatorRenderer;
+    private ParticleSystem.EmissionModule tractorIndicatorEmitter;
     public GameObject tractorTarget;
     public GameObject tractorFocus;
     private bool isTractorEnabled = false;
@@ -127,6 +129,7 @@ public class PlayerShip : MonoBehaviour
             }
         }
         tractorIndicatorRenderer = tractorIndicator.GetComponent<Renderer>();
+        tractorIndicatorEmitter = tractorIndicator.GetComponent<ParticleSystem>().emission;
         currentBlinkCharges = maxBlinkCharges;
         UpdateBlinkChargeDisplay();
         
@@ -182,8 +185,10 @@ public class PlayerShip : MonoBehaviour
         {
             isTractorConnected = false;
         }
-        tractorIndicatorRenderer.enabled = (isTractorConnected || isTractorEnabled);
-        
+        {
+            tractorIndicatorRenderer.enabled = (isTractorConnected || isTractorEnabled);
+            tractorIndicatorEmitter.enabled = (isTractorConnected || isTractorEnabled);
+        }
         if (!isTractorEnabled)
         {
             if (isTractorConnected)
@@ -427,6 +432,7 @@ public class PlayerShip : MonoBehaviour
         if (boostActive)
         {
             currentForce = currentForce + transform.TransformDirection(new Vector3(boostForce,0f,0f));
+            mainModule.startColor = engineBoostColor;
             emissionModule.rateOverTime = engineEmmisionRateOverTimeBoost;
             playEngineSound = true;
         }
@@ -549,7 +555,7 @@ public class PlayerShip : MonoBehaviour
     
     public void ToggleTractorState()
     {
-        isTractorEnabled = !isTractorEnabled;
+        isTractorEnabled = !isTractorEnabled;        
     }
    
     //Check if there are sheilds left for applying damage to other stuff
@@ -570,7 +576,13 @@ public class PlayerShip : MonoBehaviour
         if (rb != null && otherObject.tag != "Player")
         {
             Vector3 relVel = collision.relativeVelocity;
-            damage = rb.mass * relVel.magnitude; 
+            DamageNumbers otherDamageNumbers = otherObject.GetComponent<DamageNumbers>();
+            damage = rb.mass* relVel.magnitude;
+            if (otherDamageNumbers)
+            {
+                damage = Mathf.Min(otherDamageNumbers.maxDamageDone, damage);
+            }
+            damage = Mathf.Min(GetComponent<DamageNumbers>().maxDamageTaken, damage);
             hitPos = collision.contacts[0].point;
             hitDir = relVel.normalized;
             DoDamage(damage, hitDir);
@@ -609,7 +621,6 @@ public class PlayerShip : MonoBehaviour
             {
                 Color flashColor = originalShieldColor;
                 flashColor.a = 50f / 255f;
-                Debug.Log("hitDir: " + hitDir);
                 shieldMaterial.SetColor("_shieldColor", flashColor);
                 shieldMaterial.SetVector("_hitDir", transform.worldToLocalMatrix.MultiplyVector(-hitDir.normalized));
                 shieldMaterial.SetFloat("_hitStrength", 2);
