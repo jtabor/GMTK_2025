@@ -15,6 +15,8 @@ public class AstroidSpawner : MonoBehaviour
     private float spawnTimer;
     private GameObject spawnBox;
     private float nextSpawnTime;
+
+    public GameObject gameLogic;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     async Task Start()
     {
@@ -41,6 +43,8 @@ public class AstroidSpawner : MonoBehaviour
             position[1] = 0;
             position[2] = Random.Range(meshBounds.min.z, meshBounds.max.z);
             GameObject instance = Instantiate(astroidPrefabs[id], position, rotation);
+            Asteroid a = instance.GetComponent<Asteroid>();
+            a.gameLogic = gameLogic;
             Rigidbody body = instance.GetComponent<Rigidbody>();
             Quaternion rotate = Quaternion.Euler(0, Mathf.Rad2Deg * Random.Range(-angleVariant, angleVariant), 0);
             body.linearVelocity = rotate * (transform.forward * (spawnSpeed + Random.Range(-speedVariant, speedVariant)));

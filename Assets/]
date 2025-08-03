@@ -1,0 +1,81 @@
+using UnityEngine;
+
+public class BigCrustyLogic : MonoBehaviour
+{
+    
+    public GameObject gameLogicHelper;
+    
+    private GameLogicHelper helper;
+    
+    int displayed = false;
+    private string levelStartString = @"Escort Big Crusty (the asteroid in front of you) to the zone.  Target the asteroid with LMB, and use the tractor beam (toggle [T]) to drag it.";
+    private string tractorExplain = @"";
+    public GameObject[] boundaryTriggerObjects;
+    TriggerHelper[] boundaryTriggers;
+
+    public GameObject passTriggerObject;
+    TriggerHelper passTrigger;
+    
+    bool done = false; 
+
+    public GameObject ship;
+    public GameObject startObject;
+    public GameObject endObject;
+    public GameObject goalAsteroidObj;
+    private Asteroid goalAsteroid;
+
+    float firstTime = 0f;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        helper = gameLogicHelper.GetComponent<GameLogicHelper>();
+        goalAsteroid = goalAsteroidObj.GetComponent<Asteroid>();
+        
+        passTrigger = passTriggerObject.GetComponent<TriggerHelper>();
+
+        boundaryTriggers = new TriggerHelper[boundaryTriggerObjects.Length];
+        for (int i = 0; i < boundaryTriggers.Length; i++)
+        {
+            boundaryTriggers[i] = boundaryTriggerObjects[i].GetComponent<TriggerHelper>();
+        }
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+        float progress = goalAsteroid. 
+        progress = Mathf.Clamp01(progress);
+        
+        helper.UpdateProgress(progress, "Distance Left");
+
+        if (displayed == 0)
+        {
+            helper.DisplayPauseMessage("LEVEL2: BIG CRUSTY", levelStartString);
+            displayed++;
+            firstTime = Time.time + 0.2;
+        }
+        elif (displayed == 1 && Time.time > firstTime)
+        {
+            helper.DisplayPauseMessage("LEVEL2: BIG CRUSTY", levelStartString);
+            displayed++;
+            firstTime = Time.time + 0.2;
+        }
+
+        for (int i = 0; i < boundaryTriggers.Length; i++)
+        {
+            if (boundaryTriggers[i].isTriggered && !done)
+            {
+               helper.ShowFail("GAME OVER!", "You or big crusty left the play area.  Stay out of the red boxes.");
+               done = true;
+            }
+        }
+        if (passTrigger.isTriggered && !done)
+        {
+            helper.ShowPass("CONGRATS!", "Nice Job!  You led big crusty to slaughter");
+            done = true;
+        }
+
+    }
+}

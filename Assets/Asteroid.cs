@@ -9,7 +9,7 @@ public class Asteroid : MonoBehaviour
     public int numberOfSpawns = 1;
     public float maxHealth = 100f;
 
-    private float curHealth = 100f;
+    public float curHealth = 100f;
 
     public float damageScale = 1f;
     public float breakDamageScale = 0.01f;
