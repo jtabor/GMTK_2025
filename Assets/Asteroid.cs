@@ -36,16 +36,12 @@ public class Asteroid : MonoBehaviour
         Shield  //These do no damage to objects, only to the shield itself
     }
 
-    void Awake()
-    {
-        transform.Rotate(Random.rotation.eulerAngles);
-    }
-
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         curHealth = maxHealth;
         audioManager = gameLogic.GetComponent<AudioManager>();
+        transform.rotation = Random.rotation;
     }
 
     // Update is called once per frame

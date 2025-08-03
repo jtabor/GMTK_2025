@@ -51,6 +51,8 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        MainUI mainUIScript = mainUi.GetComponent<MainUI>();
+        mainUIScript.DisableSelectionRender();
         selectedTargets.RemoveAll(target => target == null);
         selectedGoals.RemoveAll(goal => goal == null);
         if (Keyboard.current.enterKey.wasPressedThisFrame){
@@ -194,8 +196,9 @@ public class Player : MonoBehaviour
                                 {
                                     selectedTractor = null;
                                 }
-                                
-                                if (ctrlPressed)
+
+                                // if (ctrlPressed)
+                                if (false)
                                 {
                                     // Append to selectedTargets if not already present
                                     if (!selectedTargets.Contains(hitObject))
@@ -206,18 +209,21 @@ public class Player : MonoBehaviour
                                 else
                                 {
                                     // Replace selectedTargets with just this one
+                                    // We only allow one selection now
                                     selectedTargets.Clear();
                                     selectedTargets.Add(hitObject);
+                                    selectedTractor = null;
                                 }
                             }
                             else if (curMode == SelectionMode.TRACTOR)
                             {
                                 // Remove from selectedTargets if it's the same object
                                 selectedTargets.Remove(hitObject);
-                                
                                 selectedTractor = hitObject;
+                                // We only allow one selection now
+                                selectedTargets.Clear();
                             }
-                            
+
                         }
                     }
                 }
@@ -265,10 +271,12 @@ public class Player : MonoBehaviour
     void DrawGameObject(Sprite cornerSprite, GameObject go, string text)
     {
         if (mainUi == null) return;
-       
+
         MainUI mainUIScript = mainUi.GetComponent<MainUI>();
         if (mainUIScript == null) return;
-       
+
+        mainUIScript.EnableSelectionRender();
+
         Collider collider = go.GetComponent<Collider>();
         if (collider == null) return;
         
