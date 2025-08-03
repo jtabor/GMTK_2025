@@ -220,12 +220,9 @@ MonoBehaviour:
   blinkIcons: []
   healthIcons: []
   shieldIcons: []
-  engineNormalClip: {fileID: 0}
-  engineBoostClip: {fileID: 0}
-  tractorEngageClip: {fileID: 0}
-  tractorSustainClip: {fileID: 0}
   shieldBreakClip: {fileID: 8300000, guid: 5b66ef704f6edf17aa48a436e036f774, type: 3}
   shieldHitClip: {fileID: 8300000, guid: ef5a5161885e92c9db27944d70a5f2bf, type: 3}
+  blinkClip: {fileID: 8300000, guid: b25d845c10e244bbaa439fd4349e1128, type: 3}
   maxForce: {x: 100, y: 0, z: 100}
   boostForce: 200
   rotationalVelMax: 90

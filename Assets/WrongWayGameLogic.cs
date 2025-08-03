@@ -9,9 +9,8 @@ public class WrongWayGameLogic : MonoBehaviour
     
     bool displayed = false;
     private string levelStartString = @"Make it to the end of the asteroid field!
-Movement:\t\t\t
-W/S forward/back, A/D rotate L/R, Q/E strafe L/R, C Inertial Brake
-Camera
+Movement:
+W/S forward/back, A/D rotate L/R, Q/E strafe L/R, C Inertial Brake, Shift Boost
 Scroll to zoom
 RMB Free look";
     
@@ -37,7 +36,6 @@ RMB Free look";
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
         hardRockTrigger = hardRockTriggerBlock.GetComponent<TriggerHelper>(); 
         helper = gameLogicHelper.GetComponent<GameLogicHelper>();
         

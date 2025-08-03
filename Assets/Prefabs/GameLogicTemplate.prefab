@@ -183,6 +183,9 @@ MonoBehaviour:
   - {fileID: 8300000, guid: f6e037a9fc7c7483284ea4fc065d76a7, type: 3}
   - {fileID: 8300000, guid: 8f7f3ebe2ac53783b9608c7bb786bde6, type: 3}
   - {fileID: 8300000, guid: 8d85147f3dd6d28be9998fb4b6ae9961, type: 3}
+  engineNoise: {fileID: 8300000, guid: 7a593710ea78ddb9b98a10f19c107521, type: 3}
+  tractorNoise: {fileID: 8300000, guid: 273d1d272110a7ea58e6b3d252bdef93, type: 3}
+  blinkNoise: {fileID: 8300000, guid: 273d1d272110a7ea58e6b3d252bdef93, type: 3}
 --- !u!114 &6258661690292581075
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -195,3 +198,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f56758ff845e2141ab66d00bc9811572, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  nextLevel: SampleScene
+  reloadLevel: SampleScene
+  pauseMessageTitle: {fileID: 0}
+  pauseMessage: {fileID: 0}
+  pauseMessageEsc: {fileID: 0}
+  gameMessageTitle: {fileID: 0}
+  gameMessage: {fileID: 0}
+  playerObject: {fileID: 0}
+  playerShip: {fileID: 0}
+  sliderObject: {fileID: 0}
+  sliderTextObject: {fileID: 0}
+  audioManager: {fileID: 0}
+  lvlComplete: {fileID: 0}
+  msgNotify: {fileID: 0}

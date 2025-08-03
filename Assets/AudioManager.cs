@@ -25,6 +25,13 @@ public class AudioManager : MonoBehaviour
     private int currentMusicIndex = 0;
     private AudioSource musicSource;
 
+    public AudioClip engineNoise;
+    public AudioClip tractorNoise;
+    public AudioClip blinkNoise;
+    
+    private AudioSource engineNoiseSource;
+    private AudioSource tractorNoiseSource;
+    private AudioSource blinkNoiseSource;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -37,6 +44,18 @@ public class AudioManager : MonoBehaviour
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.loop = false;
         musicSource.volume = musicVolume;
+        
+        engineNoiseSource = gameObject.AddComponent<AudioSource>();
+        engineNoiseSource.loop = true;
+        engineNoiseSource.volume = environmentVolume;
+        
+        tractorNoiseSource = gameObject.AddComponent<AudioSource>();
+        tractorNoiseSource.loop = true;
+        tractorNoiseSource.volume = environmentVolume;
+        
+        blinkNoiseSource = gameObject.AddComponent<AudioSource>();
+        blinkNoiseSource.loop = true;
+        blinkNoiseSource.volume = fxVolume;
         
         if (backgroundMusicClips != null && backgroundMusicClips.Count > 0)
         {
@@ -65,7 +84,6 @@ public class AudioManager : MonoBehaviour
         currentMusicIndex = (currentMusicIndex + 1) % backgroundMusicClips.Count;
     }
 
-
     public void PlayEffectClip(AudioClip clip, AudioSourceType type, float volume = -1f)
     {
         float volumeToPlay = volume >= 0 ? volume : volumes[(int) type];
@@ -76,5 +94,56 @@ public class AudioManager : MonoBehaviour
     {
         float volumeToPlay = volume >= 0 ? volume : volumes[(int) type];
         AudioSource.PlayClipAtPoint(clip, location, volumeToPlay);
+    }
+    
+    public void StartEngineNoise()
+    {
+        if (engineNoise != null && engineNoiseSource != null && !engineNoiseSource.isPlaying)
+        {
+            engineNoiseSource.clip = engineNoise;
+            engineNoiseSource.Play();
+        }
+    }
+    
+    public void StopEngineNoise()
+    {
+        if (engineNoiseSource != null)
+        {
+            engineNoiseSource.Stop();
+        }
+    }
+    
+    public void StartTractorNoise()
+    {
+        if (tractorNoise != null && tractorNoiseSource != null && !tractorNoiseSource.isPlaying)
+        {
+            tractorNoiseSource.clip = tractorNoise;
+            tractorNoiseSource.Play();
+        }
+    }
+    
+    public void StopTractorNoise()
+    {
+        if (tractorNoiseSource != null)
+        {
+            tractorNoiseSource.Stop();
+        }
+    }
+    
+    public void StartBlinkNoise()
+    {
+        if (blinkNoise != null && blinkNoiseSource != null && !blinkNoiseSource.isPlaying)
+        {
+            blinkNoiseSource.clip = blinkNoise;
+            blinkNoiseSource.Play();
+        }
+    }
+    
+    public void StopBlinkNoise()
+    {
+        if (blinkNoiseSource != null)
+        {
+            blinkNoiseSource.Stop();
+        }
     }
 }

@@ -41,8 +41,14 @@ public class GameLogicHelper : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     //
     bool triedDebug = false;
+    
+    public AudioManager audioManager;
+    public AudioClip lvlComplete;
+    public AudioClip msgNotify;
+
     void Start()
     {
+        audioManager = gameObject.GetComponent<AudioManager>();
         player = playerObject.GetComponent<Player>();
         pauseMessageTitleText = pauseMessageTitle.GetComponent<TextMeshProUGUI>();
         pauseMessageText = pauseMessage.GetComponent<TextMeshProUGUI>();
@@ -51,7 +57,6 @@ public class GameLogicHelper : MonoBehaviour
         ship = playerShip.GetComponent<PlayerShip>();
         slider = sliderObject.GetComponent<Slider>();
         sliderText = sliderTextObject.GetComponent<TextMeshProUGUI>();
-
     }
 
     // Update is called once per frame
@@ -92,6 +97,7 @@ public class GameLogicHelper : MonoBehaviour
         DisplayPauseMessage(title,message);
         restartTime = Time.time + 0.2f;
         showedPass = true;
+        audioManager.PlayEffectClip(lvlComplete,AudioManager.AudioSourceType.EFFECT,-1f);
     }
     
     public void GoToNextLevel()
@@ -110,6 +116,7 @@ public class GameLogicHelper : MonoBehaviour
         pauseMessageEsc.SetActive(true);
         pauseMessageTitleText.text = title;
         pauseMessageText.text = message;
+        audioManager.PlayEffectClip(msgNotify,AudioManager.AudioSourceType.EFFECT,-1f);
 
     }
 
@@ -139,6 +146,7 @@ public class GameLogicHelper : MonoBehaviour
         gameMessageText.text = message;
         messageDisplayTime = Time.time;
         messageEraseTime = messageDisplayTime + durationSec;
+        audioManager.PlayEffectClip(msgNotify,AudioManager.AudioSourceType.EFFECT,-1f);
 
     }
 

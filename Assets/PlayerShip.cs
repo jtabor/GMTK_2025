@@ -19,12 +19,9 @@ public class PlayerShip : MonoBehaviour
     public GameObject[] healthIcons;
     public GameObject[] shieldIcons;
 
-    public AudioClip engineNormalClip;
-    public AudioClip engineBoostClip;
-    public AudioClip tractorEngageClip;
-    public AudioClip tractorSustainClip;
     public AudioClip shieldBreakClip;
     public AudioClip shieldHitClip;
+    public AudioClip blinkClip;
 
     public Vector3 maxForce = new Vector3(100f,0f,100f);
     public float boostForce = 200f;
@@ -100,6 +97,8 @@ public class PlayerShip : MonoBehaviour
     public float engineEmmisionRateOverTimeBoost = 100f;
     public Color engineNormalColor;
     public Color engineBoostColor;
+
+    private AudioSource audioSource; 
 
     CinemachineInputAxisController camInputController;
     Collider shipCollider;
@@ -193,11 +192,16 @@ public class PlayerShip : MonoBehaviour
                 //TODO: Disconnect Effect 
             }
         }
-
+        if (!isTractorConnected)
+        {
+            audioManager.StopTractorNoise();
+        }
         if (isTractorEnabled)
         {
             if (isTractorConnected)
             {
+                audioManager.StartTractorNoise();                
+
                 Vector3 tractorDirection = tractorTarget.transform.position - tractorFocus.transform.position;
                 float distance = tractorDirection.magnitude;
 
@@ -256,6 +260,11 @@ public class PlayerShip : MonoBehaviour
         if (isBlinkPreviewing)
         {
             UpdateBlinkPreview();
+            audioManager.StartBlinkNoise();
+        }
+        else
+        {
+            audioManager.StopBlinkNoise();
         }
         
         // Handle shield recharging
@@ -407,16 +416,27 @@ public class PlayerShip : MonoBehaviour
         currentForce = transform.TransformDirection(Vector3.Scale(maxForce,control_input));
         ParticleSystem.MainModule mainModule = engineParticleSystem.main;
         ParticleSystem.EmissionModule emissionModule = engineParticleSystem.emission;
+        bool playEngineSound = false;
         if (currentForce.magnitude > 0)
         {
             mainModule.startColor = engineNormalColor;
             emissionModule.rateOverTime = engineEmmisionRateOverTime;
+            playEngineSound = true;
         }
 
         if (boostActive)
         {
             currentForce = currentForce + transform.TransformDirection(new Vector3(boostForce,0f,0f));
             emissionModule.rateOverTime = engineEmmisionRateOverTimeBoost;
+            playEngineSound = true;
+        }
+        if (playEngineSound)
+        {
+            audioManager.StartEngineNoise();
+        }
+        else
+        {
+            audioManager.StopEngineNoise();
         }
         if (Vector3.Dot(currentForce, transform.localToWorldMatrix * (new Vector3(1, 0, 0))) > 0)
         {
@@ -475,7 +495,10 @@ public class PlayerShip : MonoBehaviour
             {
                 isBlinkPreviewing = false;
                 blinkIndicatorRenderer.enabled = false;
-                
+                if (audioManager != null && shieldBreakClip != null)
+                {
+                    audioManager.PlayEffectClip(blinkClip, AudioManager.AudioSourceType.EFFECT, transform.position, -1f);
+                }
                 // Consume a charge and set cooldown
                 currentBlinkCharges--;
                 lastBlinkTime = Time.time;
