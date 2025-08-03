@@ -8,7 +8,7 @@ public class BigCrustyLogic : MonoBehaviour
     private GameLogicHelper helper;
     
     int displayed = 0;
-    private string levelStartString = @"Escort the gem filled asteroid Big Crusty (the asteroid in front of you) to the harvesting zone without it breaking!";
+    private string levelStartString = @"Escort the gem filled asteroid 'Big Crusty' (the asteroid in front of you) to the harvesting zone without it breaking!";
     private string tractorExplain = @"Use the tractor beam to help you.  Select an asteroid, turn it on with [T] and get close to the 'roid!";
     public GameObject[] boundaryTriggerObjects;
     TriggerHelperGroup[] boundaryTriggers;
@@ -49,7 +49,7 @@ public class BigCrustyLogic : MonoBehaviour
         progress = Mathf.Clamp01(progress);
         if (goalAsteroid.curHealth <= 0)
         {
-            helper.ShowFail("GAME OVER!", "Big Crusty was distroyed!");
+            helper.ShowFail("GAME OVER!", "Big Crusty was destroyed!");
             done = true;
         }
         helper.UpdateProgress(progress, "Big Crusty Health");
