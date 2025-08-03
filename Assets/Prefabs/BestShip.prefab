@@ -224,12 +224,12 @@ MonoBehaviour:
   shieldBreakClip: {fileID: 8300000, guid: 5b66ef704f6edf17aa48a436e036f774, type: 3}
   shieldHitClip: {fileID: 8300000, guid: ef5a5161885e92c9db27944d70a5f2bf, type: 3}
   blinkClip: {fileID: 8300000, guid: b25d845c10e244bbaa439fd4349e1128, type: 3}
-  maxForce: {x: 100, y: 0, z: 100}
-  boostForce: 200
+  maxForce: {x: 250, y: 0, z: 100}
+  boostForce: 500
   rotationalVelMax: 90
   mass: 100
-  maxTorque: 100
-  brakeDamping: 1000
+  maxTorque: 200
+  brakeDamping: 100
   maxHealth: 100
   maxSheilds: 50
   curHealth: 100
@@ -466,7 +466,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5
+      scalar: 6
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -5576,7 +5576,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ff21ac1415a08dc9b85d7d452ecb5a10, type: 2}
+  - {fileID: -876546973899608171, guid: 7a19ab3dcffb01346a20d395facd1f98, type: 3}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -5681,7 +5681,7 @@ ParticleSystem:
     startLifetime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -10575,7 +10575,7 @@ ParticleSystemForceField:
     m_GravityCurve:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 10
+      scalar: 20
       minScalar: 1
       maxCurve:
         serializedVersion: 2

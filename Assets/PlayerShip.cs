@@ -163,8 +163,16 @@ public class PlayerShip : MonoBehaviour
         engineParticleSystem = GetComponent<ParticleSystem>();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
+    {
+        if (tractorIndicatorRenderer.enabled)
+        {
+            Material m = tractorIndicatorRenderer.material;
+            m.SetVector("_center", tractorIndicator.transform.position);
+        }
+    }
+
+    void FixedUpdate()
     {
         prevShields = curShields;
 
