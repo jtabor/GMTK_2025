@@ -62,7 +62,7 @@ public class PlayerShip : MonoBehaviour
     public const float ZOOM_MAX = 90.0f;
     private float currentZoom = 60; 
    
-    public float tractorRange = 10f;
+    public float tractorRange = 15f;
     public float tractorMaxForce = 1000f;
     public float tractorBreakDistance = 15f;
     public float tractorSpringConstant = 500f;
