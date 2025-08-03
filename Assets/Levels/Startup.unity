@@ -715,7 +715,8 @@ MonoBehaviour:
   fxVolume: 1
   musicVolume: 0.25
   environmentVolume: 1
-  backgroundMusicClips: []
+  backgroundMusicClips:
+  - {fileID: 8300000, guid: f6e037a9fc7c7483284ea4fc065d76a7, type: 3}
   engineNoise: {fileID: 0}
   tractorNoise: {fileID: 0}
   blinkNoise: {fileID: 0}

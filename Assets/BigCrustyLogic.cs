@@ -47,7 +47,11 @@ public class BigCrustyLogic : MonoBehaviour
         
         float progress = goalAsteroid.curHealth/goalAsteroid.maxHealth;
         progress = Mathf.Clamp01(progress);
-        
+        if (goalAsteroid.curHealth <= 0)
+        {
+            helper.ShowFail("GAME OVER!", "Big Crusty was distroyed!");
+            done = true;
+        }
         helper.UpdateProgress(progress, "Big Crusty Health");
 
         if (displayed == 0)
