@@ -163,8 +163,7 @@ public class PlayerShip : MonoBehaviour
         engineParticleSystem = GetComponent<ParticleSystem>();
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         prevShields = curShields;
 
