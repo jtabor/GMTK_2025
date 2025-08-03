@@ -210,5 +210,5 @@ MonoBehaviour:
   sliderObject: {fileID: 0}
   sliderTextObject: {fileID: 0}
   audioManager: {fileID: 0}
-  lvlComplete: {fileID: 0}
-  msgNotify: {fileID: 0}
+  lvlComplete: {fileID: 8300000, guid: 550fce6e5bf9fecdf9e8701b3565a338, type: 3}
+  msgNotify: {fileID: 8300000, guid: 980741f82367388f98c54dae31157204, type: 3}
