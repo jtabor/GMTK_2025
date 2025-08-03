@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 811194209141423644}
   - component: {fileID: 2569145084440598760}
   - component: {fileID: 2469753485299061631}
+  - component: {fileID: 2941669822092317725}
   m_Layer: 0
   m_Name: GoldAsteroid
   m_TagString: Untagged
@@ -62,7 +63,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 0
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 4
   m_CollisionDetection: 0
 --- !u!136 &4496840718457233417
@@ -107,7 +108,7 @@ MonoBehaviour:
   - 1
   - 1
   numberOfSpawns: 2
-  maxHealth: 204
+  maxHealth: 300
   damageScale: 1
   breakDamageScale: 0.01
   breakAngleVariant: 1
@@ -4988,6 +4989,20 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
+--- !u!114 &2941669822092317725
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7885567012953485420}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e1691c8a73fd81c41a2ba00bf3f4f6d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxDamageTaken: 100
+  maxDamageDone: 100
 --- !u!1001 &4495840857553780504
 PrefabInstance:
   m_ObjectHideFlags: 0

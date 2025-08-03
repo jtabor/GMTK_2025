@@ -8,7 +8,9 @@ public class Asteroid : MonoBehaviour
     public float[] spawnsChances;
     public int numberOfSpawns = 1;
     public float maxHealth = 100f;
+
     private float curHealth = 100f;
+
     public float damageScale = 1f;
     public float breakDamageScale = 0.01f;
     public float breakAngleVariant = 0.5f; // Radian
@@ -101,7 +103,7 @@ public class Asteroid : MonoBehaviour
     }
     private void DoDamage(float damage, DamageSource source, Vector3 hitDir)
     {
-        
+        damage = Mathf.Min(GetComponent<DamageNumbers>().maxDamageTaken, damage);
         curHealth -= damage;
         Debug.Log("Asteroid new health: " + curHealth + " damage: " + damage);
         
