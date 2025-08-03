@@ -17,7 +17,7 @@ public class MainUI : MonoBehaviour
         
     }
 
-    public void DrawTarget(Sprite cornerSprite,Bounds objectBounds, string title)
+    public void DrawTarget(Sprite cornerSprite, Bounds objectBounds, string title)
     {
         Camera cam = Camera.main;
         if (cam == null) return;
@@ -61,20 +61,20 @@ public class MainUI : MonoBehaviour
         RectTransform canvasRect = canvas.GetComponent<RectTransform>();
         Vector2 upperLeft, lowerRight;
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
-            canvasRect, 
-            new Vector2(screenMin.x, screenMax.y), 
+            canvasRect,
+            new Vector2(screenMin.x, screenMax.y),
             cam, 
             out upperLeft);
+
         RectTransformUtility.ScreenPointToLocalPointInRectangle(
             canvasRect, 
             new Vector2(screenMax.x, screenMin.y), 
             cam, 
             out lowerRight);
-
         float width = Mathf.Abs(lowerRight.x - upperLeft.x);
         float height = Mathf.Abs(upperLeft.y - lowerRight.y);
         float minDimension = Mathf.Min(width, height);
-        
+
         if (minDimension < SELECT_MIN_SIZE)
         {
             float scale = SELECT_MIN_SIZE / minDimension;
@@ -82,8 +82,8 @@ public class MainUI : MonoBehaviour
             Vector2 halfSize = new Vector2(width / 2f, height / 2f) * scale;
             upperLeft = center + new Vector2(-halfSize.x, halfSize.y);
             lowerRight = center + new Vector2(halfSize.x, -halfSize.y);
-        } 
-        
+        }
+
         // Draw four corners using screen coordinates (pixels)
         // Upper left corner
         DrawCornerSprite(cornerSprite, upperLeft, 0f);
@@ -119,7 +119,7 @@ public class MainUI : MonoBehaviour
         rectTransform.sizeDelta = new Vector2(35,35);
         
         // Clean up after a frame (for temporary UI elements)
-        Destroy(corner, Time.deltaTime);
+        Destroy(corner, Time.deltaTime * 10.0f);
     }
     
     void DrawText(string text, Vector2 position, TextAnchor alignment)
@@ -145,7 +145,7 @@ public class MainUI : MonoBehaviour
         rectTransform.sizeDelta = new Vector2(200, 30);
         
         // Clean up after a frame (for temporary UI elements)
-        Destroy(textObj, Time.deltaTime);
+        Destroy(textObj, Time.deltaTime * 10.0f);
     }
 
 }

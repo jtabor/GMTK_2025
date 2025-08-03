@@ -105,7 +105,7 @@ public class Asteroid : MonoBehaviour
     {
         damage = Mathf.Min(GetComponent<DamageNumbers>().maxDamageTaken, damage);
         curHealth -= damage;
-        Debug.Log("Asteroid new health: " + curHealth + " damage: " + damage);
+        // Debug.Log("Asteroid new health: " + curHealth + " damage: " + damage);
         
         if (curHealth <= 0) {
             DestroyObject(source, hitDir, damage);
@@ -155,7 +155,7 @@ public class Asteroid : MonoBehaviour
             // TODO: add a random rotation
             GameObject instance = Instantiate(spawnPre, transform.position, transform.rotation);
             Rigidbody rb = instance.GetComponent<Rigidbody>();
-            Debug.Log(Mathf.Rad2Deg * Random.Range(-breakAngleVariant, breakAngleVariant));
+            // Debug.Log(Mathf.Rad2Deg * Random.Range(-breakAngleVariant, breakAngleVariant));
             rb.linearVelocity = GetComponent<Rigidbody>().linearVelocity + Quaternion.AngleAxis(Mathf.Rad2Deg * Random.Range(-breakAngleVariant, breakAngleVariant), new Vector3(0.0f, 1.0f, 0.0f)) * (hitDir.normalized * damage * breakDamageScale);
             // assume we progress half second
             instance.transform.position += rb.linearVelocity * 0.2f;

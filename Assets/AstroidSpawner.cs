@@ -18,7 +18,7 @@ public class AstroidSpawner : MonoBehaviour
 
     public GameObject gameLogic;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    async Task Start()
+    void Start()
     {
         spawnTimer = 0;
         spawnBox = transform.Find("Spawn Box").gameObject;

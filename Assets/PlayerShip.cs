@@ -238,7 +238,7 @@ public class PlayerShip : MonoBehaviour
                     }
                 }
             }
-            else 
+            else if (tractorTarget)
             {
                 float distance = Vector3.Distance(tractorFocus.transform.position, tractorTarget.transform.position);
                 if (distance <= tractorRange)
@@ -636,7 +636,7 @@ public class PlayerShip : MonoBehaviour
                 shieldFadeStartTime = Time.time;
             }
             
-            Debug.Log("Shield damage: " + shieldDamage + " - Shields remaining: " + curShields);
+            // Debug.Log("Shield damage: " + shieldDamage + " - Shields remaining: " + curShields);
             UpdateShieldDisplay();
         }
         
@@ -644,12 +644,12 @@ public class PlayerShip : MonoBehaviour
         if (damage > 0)
         {
             curHealth -= damage;
-            Debug.Log("Health damage: " + damage + " - Health remaining: " + curHealth);
+            // Debug.Log("Health damage: " + damage + " - Health remaining: " + curHealth);
             UpdateHealthDisplay();
         }
         
         if (curHealth <= 0) {
-            Debug.Log("PLAYER SHIP DESTROYED!");
+            // Debug.Log("PLAYER SHIP DESTROYED!");
             //TODO Add Losing.
         }
     }

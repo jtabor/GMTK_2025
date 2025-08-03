@@ -275,7 +275,7 @@ public class Player : MonoBehaviour
         // Get world space bounds
         Bounds bounds = collider.bounds;
         
-                    // Draw the target UI
+        // Draw the target UI
         mainUIScript.DrawTarget(cornerSprite, bounds, text);
     
 
