@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.UI;
 
 public class GameLogicHelper : MonoBehaviour
 {
@@ -25,11 +26,17 @@ public class GameLogicHelper : MonoBehaviour
     private float messageEraseTime = 1f;
     
     public GameObject playerShip;
+    
+    public GameObject sliderObject;
+    public GameObject sliderTextObject;
+    private Slider slider;
+    private TextMeshProUGUI sliderText;
 
     PlayerShip ship;
 
     Player player;
     private bool showedDeath = false; 
+    private bool showedPass = false; 
     private float restartTime = 999999f;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     //
@@ -42,6 +49,9 @@ public class GameLogicHelper : MonoBehaviour
         gameMessageTitleText = gameMessageTitle.GetComponent<TextMeshProUGUI>();
         gameMessageText = gameMessage.GetComponent<TextMeshProUGUI>();
         ship = playerShip.GetComponent<PlayerShip>();
+        slider = sliderObject.GetComponent<Slider>();
+        sliderText = sliderTextObject.GetComponent<TextMeshProUGUI>();
+
     }
 
     // Update is called once per frame
@@ -60,24 +70,35 @@ public class GameLogicHelper : MonoBehaviour
         {
             RestartLevel();
         }
+        else if(Time.time > restartTime && showedPass)
+        {
+            GoToNextLevel();
+        }
         if (ship.curHealth <= 0 && !showedDeath)
         {
             ShowFail("DEATH NOTICE", "You died, Press [Enter] to try again!");
         }
     }
     
-    void ShowFail(string title, string message)
+    public void ShowFail(string title, string message)
     {
         DisplayPauseMessage(title,message);
         restartTime = Time.time + 0.2f;
         showedDeath = true;
     }
-   
-    void GoToNextLevel()
+
+    public void ShowPass(string title, string message)
+    {
+        DisplayPauseMessage(title,message);
+        restartTime = Time.time + 0.2f;
+        showedPass = true;
+    }
+    
+    public void GoToNextLevel()
     {
         SceneManager.LoadScene(nextLevel);
     }
-    void RestartLevel()
+    public void RestartLevel()
     {
         SceneManager.LoadScene(reloadLevel);
     }
@@ -100,10 +121,16 @@ public class GameLogicHelper : MonoBehaviour
 
     }
 
+    public void UpdateProgress(float newValue, string newSliderText)
+    {
+        sliderObject.SetActive(true); 
+        sliderTextObject.SetActive(true);
+        slider.value = newValue; 
+        sliderText.text = newSliderText; 
+    }
 
     public void DisplayGameMessage(string title, string message, float durationSec)
     {
-        player.SetGamePause(true); 
         
         gameMessageTitle.SetActive(true);
         gameMessage.SetActive(true);
