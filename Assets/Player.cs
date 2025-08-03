@@ -33,7 +33,7 @@ public class Player : MonoBehaviour
         // GOAL
     }
     private string[] modeStrings = {"TRGT", "TRCTR","GL"};
-    public SelectionMode curMode = SelectionMode.TARGET;
+    private SelectionMode curMode = SelectionMode.TRACTOR;
     
     public enum PauseState{
         NONE,
@@ -97,6 +97,13 @@ public class Player : MonoBehaviour
 
         if (controlledObject != null && curPauseState == PauseState.NONE)
         {
+            
+            if (Keyboard.current.rightBracketKey.wasPressedThisFrame)
+            {
+                GameLogicHelper glh = gameLogic.GetComponent<GameLogicHelper>();
+                glh.GoToNextLevel();
+            }
+
             PlayerShip ship = controlledObject.GetComponent<PlayerShip>();
             if (ship != null)
             {
@@ -178,8 +185,8 @@ public class Player : MonoBehaviour
                         Clickable clickable = hitObject.GetComponent<Clickable>();
                         if (clickable != null)
                         {
-                            bool ctrlPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
-                            
+                            // bool ctrlPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
+                            bool ctrlPressed = false; 
                             if (curMode == SelectionMode.TARGET)
                             {
                                 // Remove from selectedTractor if it's the same object

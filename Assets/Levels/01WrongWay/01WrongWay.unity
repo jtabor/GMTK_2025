@@ -4603,6 +4603,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6258661690292581075, guid: 2bef679ba0a66c3379f8b1645240ad1f, type: 3}
+      propertyPath: nextLevel
+      value: 02TooManyRocks
+      objectReference: {fileID: 0}
+    - target: {fileID: 6258661690292581075, guid: 2bef679ba0a66c3379f8b1645240ad1f, type: 3}
       propertyPath: playerShip
       value: 
       objectReference: {fileID: 240858954}
@@ -4662,6 +4666,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: GameLogicTemplate
       objectReference: {fileID: 0}
+    - target: {fileID: 8385428864092322304, guid: 2bef679ba0a66c3379f8b1645240ad1f, type: 3}
+      propertyPath: backgroundMusicClips.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8385428864092322304, guid: 2bef679ba0a66c3379f8b1645240ad1f, type: 3}
+      propertyPath: 'backgroundMusicClips.Array.data[0]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 8f7f3ebe2ac53783b9608c7bb786bde6, type: 3}
+    - target: {fileID: 8385428864092322304, guid: 2bef679ba0a66c3379f8b1645240ad1f, type: 3}
+      propertyPath: 'backgroundMusicClips.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8300000, guid: 8d85147f3dd6d28be9998fb4b6ae9961, type: 3}
+    - target: {fileID: 8385428864092322304, guid: 2bef679ba0a66c3379f8b1645240ad1f, type: 3}
+      propertyPath: 'backgroundMusicClips.Array.data[2]'
+      value: 
+      objectReference: {fileID: 8300000, guid: f6e037a9fc7c7483284ea4fc065d76a7, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

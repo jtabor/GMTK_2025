@@ -9,8 +9,14 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
+    path: Assets/Levels/Startup.unity
+    guid: 145b39797545b8453ac553385229878b
+  - enabled: 1
     path: Assets/Levels/01WrongWay/01WrongWay.unity
     guid: 66e1305ab7328a2ad96362f5d19bac5a
+  - enabled: 1
+    path: Assets/Levels/02TooManyRocks/02TooManyRocks.unity
+    guid: 93c602985bd0396b1960544883b83427
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0
